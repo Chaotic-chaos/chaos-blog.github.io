@@ -95,29 +95,29 @@ services:
 
 
 启动wg-easy：docker-compose up -d" />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -127,7 +127,7 @@ services:
   <meta itemprop="datePublished" content="2022-01-28T15:56:00+00:00">
   <meta itemprop="dateModified" content="2022-01-28T15:56:00+00:00">
   <meta itemprop="wordCount" content="144">
-  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/17/">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/17/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="使用wireguard&amp;wg-easy快速实现异地组网">
   <meta property="og:description" content="背景 WireGuard：是一个现代化的基于Linux内核态运行的高效、优雅的跨平台VPN实现方案；底层协议采用UDP进行数据传输 wg-easy：是一个使用Vue&#43;wireguard开发的快速启动、管理、监控wg服务的docker镜像 需求： 异地组网：n台互相在异地的机器相互组成一个局域网并各自拥有自己在该虚拟内网中的独立ip地址，实现无障碍安全互访 无公网ip：这里不做标题党，具体的网络拓扑是： 1台具备公网ip的服务器 n-1台不具备公网ip并且藏在无数层NAT之后的机器 解决方案 总体思路 使用具备公网ip的服务器作为wg服务端，所有在vpn内的机器直接通过该设备进行流量转发 wg-easy启动在公网ip服务器，并统一通过面板为客户机下发配置文件 其他设备直接本机安装wg作为客户端 启动服务端（具备公网ip的机器） 这里采用docker-compose的方式进行启动，由于wg-easy具备一个漂亮的管理面板，故使用traefik对其进行管理
@@ -145,7 +145,7 @@ services:
   <meta name="twitter:description" content="背景 WireGuard：是一个现代化的基于Linux内核态运行的高效、优雅的跨平台VPN实现方案；底层协议采用UDP进行数据传输 wg-easy：是一个使用Vue&#43;wireguard开发的快速启动、管理、监控wg服务的docker镜像 需求： 异地组网：n台互相在异地的机器相互组成一个局域网并各自拥有自己在该虚拟内网中的独立ip地址，实现无障碍安全互访 无公网ip：这里不做标题党，具体的网络拓扑是： 1台具备公网ip的服务器 n-1台不具备公网ip并且藏在无数层NAT之后的机器 解决方案 总体思路 使用具备公网ip的服务器作为wg服务端，所有在vpn内的机器直接通过该设备进行流量转发 wg-easy启动在公网ip服务器，并统一通过面板为客户机下发配置文件 其他设备直接本机安装wg作为客户端 启动服务端（具备公网ip的机器） 这里采用docker-compose的方式进行启动，由于wg-easy具备一个漂亮的管理面板，故使用traefik对其进行管理
 建立启动配置文件 version: &#34;3.8&#34; services: wg-easy: environment: # ⚠️ Required: # Change this to your host&#39;s public address - WG_HOST=&lt;ur host domain&gt; # - WG_DEFAULT_DNS=192.168.2.1 - WG_ALLOWED_IPS=&lt;set default ACL in the clients&gt; # Optional: - PASSWORD=&lt;web ui&#39;s password&gt; # - WG_PORT=51820 - WG_DEFAULT_ADDRESS=10.8.0.x # - WG_MTU=1420 image: weejewel/wg-easy container_name: wg_easy volumes: - &lt;path_to_host&gt;:/etc/wireguard # ports: # - &#34;51820:51820/udp&#34; # control port(main) # - &#34;51821:51821/tcp&#34; # web ui port network_mode: &#34;host&#34; # ⚠️Required restart: unless-stopped cap_add: - NET_ADMIN - SYS_MODULE labels: - traefik.enable=true - traefik.http.routers.wg_easy.rule=Host(`&lt;url rule for traefik&gt;`) - traefik.http.routers.wg_easy.middlewares=redirect - traefik.http.routers.wg_easy.tls=true - traefik.http.routers.wg_easy.tls.certresolver=sample - traefik.http.middlewares.redirect.redirectscheme.scheme=https - traefik.http.middlewares.redirect.redirectscheme.permanent=true - traefik.http.services.wg_easy.loadbalancer.server.port=51821 启动wg-easy：docker-compose up -d">
 
-  <link rel="canonical" href="/posts/17/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/17/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -155,7 +155,7 @@ services:
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -367,25 +367,25 @@ services:
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/system"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/system"
       >System</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
       >日常使用</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/18/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/18/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>简单的shell脚本搭配Crontab实现linux定时备份设定文件(夹)</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/15/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/15/"
       ><span>使用zerotier-one搭配anyproxy保障多种方式回内网</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

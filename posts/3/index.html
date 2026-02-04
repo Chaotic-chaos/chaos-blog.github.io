@@ -92,29 +92,29 @@ deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/up
 代理上网
 
 wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2" />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -125,7 +125,7 @@ wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟�
   <meta itemprop="datePublished" content="2021-03-09T14:50:00+00:00">
   <meta itemprop="dateModified" content="2021-03-09T14:50:00+00:00">
   <meta itemprop="wordCount" content="182">
-  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/3/">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/3/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="windows下使用wsl2初体验">
   <meta property="og:description" content="背景 尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试 几点说明 本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网 本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录 概念 wsl全名windows subsystem for linux 开始安装 安装WSL2功能模块 该步骤下所有命令执行都在windows powershell(管理员模式)下
@@ -145,7 +145,7 @@ wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟�
 打开wsl功能模块 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart 安装必要功能 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart 重启电脑，完成安装（重要，我被卡在这里很久） 设置内核安装默认为wsl2 powershell（管理员）执行wsl --set-default-version 2 这里正常的话是可以正常执行的，如果提示类似于需要升级wsl内核之类的信息的话，就需要手动更新一下wsl内核： 下载地址 下载完成双击打开一路下一步即可，无其他可选项 安装linux子系统 打开windows应用商店，搜索关键字linux 下载安装想要使用的linux发行版，等待安装完成 开始菜单启动一次刚刚安装的发行版，耐心等待安装完成 配置 以下配置以本人安装的Debain为例，步骤差不多，有一些命令可能会不一样
 换源 用预设源进行apt-get update，切记不能先换源，否则会出现错误 安装必要软件apt-get install ca-certificates 备份原源列表cp /etc/apt/sources.list /etc/apt/sources.list.backup 编辑源列表nano /etc/apt/sources.list 将源列表内容替换为下列内容 deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free #deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free 更新源列表apt-get update 代理上网 wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2">
 
-  <link rel="canonical" href="/posts/3/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/3/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -155,7 +155,7 @@ wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟�
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -373,25 +373,25 @@ deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/up
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/system"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/system"
       >System</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
       >日常使用</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/4/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/4/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用Docker将python应用打包为images</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/2/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/2/"
       ><span>关于python协程销毁、超时</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

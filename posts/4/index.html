@@ -70,29 +70,29 @@ docker save -o &lt;file_name.tar&gt; &lt;image_name&gt;
 将迁移的tar文件导入为镜像
 docker load --input &lt;file_name.tar&gt;
 " />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -102,7 +102,7 @@ docker load --input &lt;file_name.tar&gt;
   <meta itemprop="datePublished" content="2021-03-26T16:38:00+00:00">
   <meta itemprop="dateModified" content="2021-03-26T16:38:00+00:00">
   <meta itemprop="wordCount" content="70">
-  <meta itemprop="keywords" content="分享,Docker"><meta property="og:url" content="/posts/4/">
+  <meta itemprop="keywords" content="分享,Docker"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/4/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="使用Docker将python应用打包为images">
   <meta property="og:description" content="需求描述 正常运行的sanic应用需要进行服务器迁移，首先想到的当然是通过docker 基本步骤 编写dockerfile 这里非必须在应用根目录下进行dockerfile的建立及编写，但是为了后续方便，强烈建议
@@ -120,7 +120,7 @@ docker load --input &lt;file_name.tar&gt;
   <meta name="twitter:description" content="需求描述 正常运行的sanic应用需要进行服务器迁移，首先想到的当然是通过docker 基本步骤 编写dockerfile 这里非必须在应用根目录下进行dockerfile的建立及编写，但是为了后续方便，强烈建议
 在应用根目录新建Dockerfile文件 touch Dockerfile 内容 # 基础镜像，这里选用python3.8 FROM python:3.8 # 维护者（非必需） MAINTAINER &lt;your_name&gt; &lt;your_email&gt; # 指定工作目录 WORKDIR / # 将应用所需文件拷贝到容器中 COPY . / # 安装必要的python三方库，建议提前生成一个依赖库列表，为了后续的构建方便 # 这里推荐使用pipreqs三方库生成，这样能够最小化使用到的库数量 RUN pip install -r requirements.txt -i https://pypi.doubanio.com/simple # 暴露容器端口 EXPOSE &lt;port_used&gt;/tcp # 执行docker run会执行的命令，按照空格进行分割 CMD [&#34;python&#34;, &#34;/run.py&#34;] 构建docker镜像 docker build -t &lt;image_name&gt; &lt;Dockerfile_path&gt; // 这里需要强调的是 &lt;Dockerfile_path&gt; 一定需要是一个目录，而不是dockerfile本身 其他 将镜像打包为tar文件，方便迁移 docker save -o &lt;file_name.tar&gt; &lt;image_name&gt; 将迁移的tar文件导入为镜像 docker load --input &lt;file_name.tar&gt;">
 
-  <link rel="canonical" href="/posts/4/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/4/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -130,7 +130,7 @@ docker load --input &lt;file_name.tar&gt;
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -272,25 +272,25 @@ CMD [&#34;python&#34;, &#34;/run.py&#34;]
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E5%88%86%E4%BA%AB"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E5%88%86%E4%BA%AB"
       >分享</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/docker"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/docker"
       >Docker</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/5/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/5/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>深度学习中的预训练与自训练</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/3/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/3/"
       ><span>windows下使用wsl2初体验</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

@@ -56,29 +56,29 @@ optimizer.zero_grad()
 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同
 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空
 " />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -87,7 +87,7 @@ optimizer.zero_grad()
   <meta itemprop="datePublished" content="2021-11-30T10:19:00+00:00">
   <meta itemprop="dateModified" content="2021-11-30T10:19:00+00:00">
   <meta itemprop="wordCount" content="20">
-  <meta itemprop="keywords" content="Python,深度学习"><meta property="og:url" content="/posts/12/">
+  <meta itemprop="keywords" content="Python,深度学习"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/12/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="model.zero_grad() VS. optimzer.zero_grad()">
   <meta property="og:description" content="引言 在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度 在阅读不同的代码时，总能看到不同的清空代码： model.zero_grad() optimizer.zero_grad() 正文 上述两种梯度清空的方式均有效，区别在于起作用的范围不同 model.zero_grad() 此时mdoel包含的所有参数上的梯度均被清空 optimizer.zero_grad() 此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空 若模型训练过程中只有一个优化器，即优化器构造时使用 optimizer = optim.Optimiers(model.parameters(), lr=args.lr) 此时上述两种梯度清空方式完全等价 总结 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空">
@@ -103,7 +103,7 @@ optimizer.zero_grad()
   <meta name="twitter:title" content="model.zero_grad() VS. optimzer.zero_grad()">
   <meta name="twitter:description" content="引言 在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度 在阅读不同的代码时，总能看到不同的清空代码： model.zero_grad() optimizer.zero_grad() 正文 上述两种梯度清空的方式均有效，区别在于起作用的范围不同 model.zero_grad() 此时mdoel包含的所有参数上的梯度均被清空 optimizer.zero_grad() 此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空 若模型训练过程中只有一个优化器，即优化器构造时使用 optimizer = optim.Optimiers(model.parameters(), lr=args.lr) 此时上述两种梯度清空方式完全等价 总结 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空">
 
-  <link rel="canonical" href="/posts/12/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/12/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -113,7 +113,7 @@ optimizer.zero_grad()
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -242,25 +242,25 @@ optimizer.zero_grad()
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/python"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/python"
       >Python</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"
       >深度学习</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/14/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/14/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Treafik反代保姆级急速上手</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/11/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/11/"
       ><span>windows平台下配置Texlive&#43;Texstudio书写LaTex文本</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

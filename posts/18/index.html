@@ -66,29 +66,29 @@ echo -e &#34;\n\n&#34;
 
 保存查看crontab -l
 " />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -97,7 +97,7 @@ echo -e &#34;\n\n&#34;
   <meta itemprop="datePublished" content="2022-03-10T10:45:00+00:00">
   <meta itemprop="dateModified" content="2022-03-10T10:45:00+00:00">
   <meta itemprop="wordCount" content="75">
-  <meta itemprop="keywords" content="日常使用,Linux,系统"><meta property="og:url" content="/posts/18/">
+  <meta itemprop="keywords" content="日常使用,Linux,系统"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/18/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="简单的shell脚本搭配Crontab实现linux定时备份设定文件(夹)">
   <meta property="og:description" content="场景 自用linux系统装在一块不是太稳定的硬盘里，很多服务启动脚本、docker容器脚本需要定期备份到另一块硬盘上 硬连接不适用于文件夹、跨盘连接 软链接在源文件丢失、挂掉的情况下会失效 解决方案 使用简单的一个shell脚本向目标位置复制需要备份的文件（夹） crontab是linux提供的定时任务，搭配上述脚本实现每xx时间自动执行shell脚本 脚本 services=( \ &#34;path/to/some/file/or/folder&#34; \ &#34;path/to/another/file/or/folder&#34; \ ) destination=&#34;/path/to/destination/folder/&#34; for elem in ${services[@]} do echo &#34;# Backuping $elem&#34; cp -r $elem $destination done echo &#34;--------------------------------&#34; date echo &#34;- All backup task completed! -&#34; echo &#34;--------------------------------&#34; echo &#34;--------------------------------&#34; echo -e &#34;\n\n&#34; 设置定时任务 打开定时任务编辑 crontab -e 添加任务 # backup all of my services at 3:50 every day 50 3 * * * bash /path/to/backup_services.sh &gt;&gt; /path/to/backup.logs 2&gt;&amp;1 &amp; 保存查看crontab -l">
@@ -114,7 +114,7 @@ echo -e &#34;\n\n&#34;
   <meta name="twitter:title" content="简单的shell脚本搭配Crontab实现linux定时备份设定文件(夹)">
   <meta name="twitter:description" content="场景 自用linux系统装在一块不是太稳定的硬盘里，很多服务启动脚本、docker容器脚本需要定期备份到另一块硬盘上 硬连接不适用于文件夹、跨盘连接 软链接在源文件丢失、挂掉的情况下会失效 解决方案 使用简单的一个shell脚本向目标位置复制需要备份的文件（夹） crontab是linux提供的定时任务，搭配上述脚本实现每xx时间自动执行shell脚本 脚本 services=( \ &#34;path/to/some/file/or/folder&#34; \ &#34;path/to/another/file/or/folder&#34; \ ) destination=&#34;/path/to/destination/folder/&#34; for elem in ${services[@]} do echo &#34;# Backuping $elem&#34; cp -r $elem $destination done echo &#34;--------------------------------&#34; date echo &#34;- All backup task completed! -&#34; echo &#34;--------------------------------&#34; echo &#34;--------------------------------&#34; echo -e &#34;\n\n&#34; 设置定时任务 打开定时任务编辑 crontab -e 添加任务 # backup all of my services at 3:50 every day 50 3 * * * bash /path/to/backup_services.sh &gt;&gt; /path/to/backup.logs 2&gt;&amp;1 &amp; 保存查看crontab -l">
 
-  <link rel="canonical" href="/posts/18/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/18/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -124,7 +124,7 @@ echo -e &#34;\n\n&#34;
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -263,29 +263,29 @@ echo -e &#34;\n\n&#34;
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
       >日常使用</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/linux"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/linux"
       >Linux</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E7%B3%BB%E7%BB%9F"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E7%B3%BB%E7%BB%9F"
       >系统</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/19/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/19/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Debian使用kvm&#43;qemu&#43;cockpit搭建带有webui的虚拟机管理系统</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/17/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/17/"
       ><span>使用wireguard&amp;amp;wg-easy快速实现异地组网</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

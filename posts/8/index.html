@@ -89,29 +89,29 @@ sudo nano /etc/sudoers
 
 删除用户
 deluser --remove-home &lt;user_name&gt;" />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -125,7 +125,7 @@ sudo passwd &lt;user_name&gt;
   <meta itemprop="datePublished" content="2021-08-03T10:41:00+00:00">
   <meta itemprop="dateModified" content="2021-08-03T10:41:00+00:00">
   <meta itemprop="wordCount" content="79">
-  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/8/">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/8/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="不同Linux发行版添加新用户并设置权限">
   <meta property="og:description" content="背景 由于一些需求，需要给服务器添加一个新用户并设置sudo权限 之前从未进行过该方面的学习，找到一个非常详细的博文，故记录一下 该随笔会保持更新，收录多种发行版下对用户账号的操作 Ubuntu 18.04 添加新用户 sudo useradd -r -m -s &lt;新用户要使用的shell&gt; &lt;新用户名&gt;
@@ -151,7 +151,7 @@ sudo passwd &lt;user_name&gt;
 默认/etc/sudoers不可编辑，首先修改权限chmod &#43;w /etc/sudoers 增加新用户 sudo nano /etc/sudoers # 适当位置添加 &lt;uer_name&gt; ALL=(ALL:ALL) ALL 保存生效 删除用户 执行删除命令sudo userdel &lt;user_name&gt; 删除用户目录sudo rm -rf /home/&lt;user_name&gt; 移除/etc/sudoers中关于&lt;user_name&gt;的权限设置，否则无法创建新的同名用户 参考 Ubuntu创建新用户的正确姿势 Debian 10.2 创建用户 sudo adduser &lt;user_name&gt; 执行完上述命令后，系统会提示设置该用户的密码、个人信息等 授权用户sudo 使用修改/etc/sudoers文件的方式将该用户加入sudo组以授权超级权限
 授权sudoers文件可编辑sudo chmod &#43;w /etc/sudoers 增加新用户 sudo nano /etc/sudoers # 适当位置添加 &lt;uer_name&gt; ALL=(ALL:ALL) ALL 保存生效 删除用户 deluser --remove-home &lt;user_name&gt;">
 
-  <link rel="canonical" href="/posts/8/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/8/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -161,7 +161,7 @@ sudo passwd &lt;user_name&gt;
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -323,25 +323,25 @@ sudo passwd &lt;user_name&gt;
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/system"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/system"
       >System</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
       >日常使用</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/9/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/9/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Pytorch使用单机多卡训练</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/7/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/7/"
       ><span>深度神经网络中seed函数</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

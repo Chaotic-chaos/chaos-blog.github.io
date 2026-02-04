@@ -67,29 +67,29 @@ sudo gpg --homedir /var/lib/yum/repos/$(uname -m)/$DIST/nvidia-container-runtime
 安装
 
 安装源来自于nvidia官网，可能会有些慢" />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -102,7 +102,7 @@ Debian-based distributions curl -s -L https://nvidia.github.io/nvidia-container-
   <meta itemprop="datePublished" content="2022-08-04T17:16:32+00:00">
   <meta itemprop="dateModified" content="2022-08-04T17:16:32+00:00">
   <meta itemprop="wordCount" content="107">
-  <meta itemprop="keywords" content="深度学习,System,Linux"><meta property="og:url" content="/posts/21/">
+  <meta itemprop="keywords" content="深度学习,System,Linux"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/21/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="不同发行版安装NVIDIA-container-runtime">
   <meta property="og:description" content="背景 NVIDIA-container-runtime是在docker容器中映射本机显卡必备的运行时 NVIDIA推出该工具之后搭配新版本的docker就不需要使用单独版本的docker启动支持显卡的容器 开始动手 添加安装源 官网比较难进，酌情查看
@@ -127,7 +127,7 @@ curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \ sudo apt
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID) curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.repo | \ sudo tee /etc/yum.repos.d/nvidia-container-runtime.repo 更新密钥 安装源来自于nvidia官网，可能会有些慢
 Debian-based distributions curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \ sudo apt-key add - RHEL-based distributions DIST=$(sed -n &#39;s/releasever=//p&#39; /etc/yum.conf) DIST=${DIST:-$(. /etc/os-release; echo $VERSION_ID)} sudo rpm -e gpg-pubkey-f796ecb0 sudo gpg --homedir /var/lib/yum/repos/$(uname -m)/$DIST/nvidia-container-runtime/gpgdir --delete-key f796ecb0 安装 安装源来自于nvidia官网，可能会有些慢">
 
-  <link rel="canonical" href="/posts/21/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/21/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -137,7 +137,7 @@ Debian-based distributions curl -s -L https://nvidia.github.io/nvidia-container-
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -287,29 +287,29 @@ Debian-based distributions curl -s -L https://nvidia.github.io/nvidia-container-
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"
       >深度学习</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/system"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/system"
       >System</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/linux"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/linux"
       >Linux</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/22/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/22/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Linux下xargs的基本用法</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/20/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/20/"
       ><span>Pytorch单机多卡(DP)训练之后的模型“货不对板”</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

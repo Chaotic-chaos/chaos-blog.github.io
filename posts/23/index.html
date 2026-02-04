@@ -50,29 +50,29 @@ async with self.pool_db.acquire() as conn:
 
 (StackOverflow)[https://stackoverflow.com/questions/21974169/how-to-disable-query-cache-with-mysql-connector]
 " />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -80,7 +80,7 @@ async with self.pool_db.acquire() as conn:
   <meta itemprop="description" content="背景 近期开发sanic框架下的系统使用到了aiomysql三方库，异步执行sql提高系统工作效率 在手动向数据库插入数据后，使用aiomysql进行select时并不能查询到刚刚插入的数据，只能重启web服务 问题定位 最终定位问题为数据库操作仅针对非select进行了commit，造成select一直使用的是缓存 解决 一种方式是在所有的query语句之后都对上一次查询进行commit async with self.pool_db.acquire() as conn: # some query await conn.commit() 另一种方式是在执行sql之前将连接设置自动提交模式 async with self.pool_db.acquire() as conn: await conn.autocommit(True) 引用 (StackOverflow)[https://stackoverflow.com/questions/21974169/how-to-disable-query-cache-with-mysql-connector]">
   <meta itemprop="datePublished" content="2023-02-08T20:27:30+00:00">
   <meta itemprop="dateModified" content="2023-02-08T20:27:30+00:00">
-  <meta itemprop="wordCount" content="27"><meta property="og:url" content="/posts/23/">
+  <meta itemprop="wordCount" content="27"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/23/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="aoimysql配合mysql使用时的query缓存坑">
   <meta property="og:description" content="背景 近期开发sanic框架下的系统使用到了aiomysql三方库，异步执行sql提高系统工作效率 在手动向数据库插入数据后，使用aiomysql进行select时并不能查询到刚刚插入的数据，只能重启web服务 问题定位 最终定位问题为数据库操作仅针对非select进行了commit，造成select一直使用的是缓存 解决 一种方式是在所有的query语句之后都对上一次查询进行commit async with self.pool_db.acquire() as conn: # some query await conn.commit() 另一种方式是在执行sql之前将连接设置自动提交模式 async with self.pool_db.acquire() as conn: await conn.autocommit(True) 引用 (StackOverflow)[https://stackoverflow.com/questions/21974169/how-to-disable-query-cache-with-mysql-connector]">
@@ -94,7 +94,7 @@ async with self.pool_db.acquire() as conn:
   <meta name="twitter:title" content="aoimysql配合mysql使用时的query缓存坑">
   <meta name="twitter:description" content="背景 近期开发sanic框架下的系统使用到了aiomysql三方库，异步执行sql提高系统工作效率 在手动向数据库插入数据后，使用aiomysql进行select时并不能查询到刚刚插入的数据，只能重启web服务 问题定位 最终定位问题为数据库操作仅针对非select进行了commit，造成select一直使用的是缓存 解决 一种方式是在所有的query语句之后都对上一次查询进行commit async with self.pool_db.acquire() as conn: # some query await conn.commit() 另一种方式是在执行sql之前将连接设置自动提交模式 async with self.pool_db.acquire() as conn: await conn.autocommit(True) 引用 (StackOverflow)[https://stackoverflow.com/questions/21974169/how-to-disable-query-cache-with-mysql-connector]">
 
-  <link rel="canonical" href="/posts/23/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/23/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -104,7 +104,7 @@ async with self.pool_db.acquire() as conn:
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -227,17 +227,17 @@ async with self.pool_db.acquire() as conn:
 
   <nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>交换机中的“镜像”</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/22/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/22/"
       ><span>Linux下xargs的基本用法</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

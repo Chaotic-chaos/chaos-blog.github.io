@@ -174,29 +174,29 @@ providers:
 # --------------------------------------- #
 创建docker子网
 docker network create traefik-net" />
-  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -207,7 +207,7 @@ Traefik主服务启动前 静态配置 静态配置需要在主服务启动之�
   <meta itemprop="datePublished" content="2021-12-30T15:21:00+00:00">
   <meta itemprop="dateModified" content="2021-12-30T15:21:00+00:00">
   <meta itemprop="wordCount" content="490">
-  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/14/">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/14/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="Treafik反代保姆级急速上手">
   <meta property="og:description" content="需求场景 所有需要反代的场景 服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本… 什么是Treafik Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理 Treafik可以自适应并动态自动发现你添加的所有服务、容器等等 Treafik适配了当前主流的所有服务技术（docker, k8s…），这意味着你可以一次配置，终生动态，非常适合我这种懒人… 正式使用 概念 这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读
@@ -227,7 +227,7 @@ Traefik主服务启动前 静态配置 静态配置需要在主服务启动之�
 静态配置 Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务 主要包括 全局配置项（Global） 日志配置项（Log） 入口点（Entrypoints） 安全证书（TLS） 提供者声明（Provider） 该文件对应docker中/etc/traefik/traefik.yaml 容器启动时Traefik会自动在/etc/traefik/目录下寻找traefik.toml/traefik.yaml/traefik.yml文件作为其静态配置 Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅文档 动态配置 基本等同于各个来源的Provider配置 主要需要编辑的是File Provider文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service） 提供者/Providers 简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址 该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现 本教程中将只会展示两种Provider的配置方式，其他更多的请查阅文档 入口点/EntryPoints 即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口 所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡 可以开设多个入口点，一般为80&#43;443 路由/Routers Traefik对外暴露的规则及其对内的具体服务路由规则 在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则 在这里定义Traefik在接受到特定请求时该路由到的服务/Services 服务/Services 路由所要代理的具体服务地址 这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅文档 开始/Let the Traefik Go 这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档
 Traefik主服务启动前 静态配置 静态配置需要在主服务启动之前完全确定下来并映射进容器/etc/traefik/中，主服务只会在启动、重启时读取一次，后续不再监控更改 文件名必须为traefik.yaml或traefik.tmol或traefik.yml 这里贴出我的配置，具体作用见配置项名或注释 ########################################### # # # Main Configuration File for Treafik # # By Chaos # # # ########################################### ## Global Config ## # --------------------------------------- # global: checkNewVersion: true sendAnonymousUsage: false # --------------------------------------- # ## Log Config ## # --------------------------------------- # log: # all the path is defined in the container # u need to map it outside filePath: &#34;/etc/logs/run.log&#34; level: &#34;DEBUG&#34; format: &#34;json&#34; accesslog: filePath: &#34;/etc/logs/access.log&#34; bufferingSize: 100 format: &#34;json&#34; # --------------------------------------- # ## Api Config ## # --------------------------------------- # # 开启Traefik的控制看板 api: dashboard: true insecure: true # --------------------------------------- # ## Entrypoints Config ## # --------------------------------------- # # Definition entryPoints: web: # EntryPoint name address: &#34;:80&#34; # EntryPoint address, must be string, not a integer web-secure: address: &#34;:443&#34; frps-control: address: &#34;:446&#34; # --------------------------------------- # ## TLS Config ## # --------------------------------------- # certificatesResolvers: sample: # 自定义名称，后边会用 acme: # 固定 email: &#34;life0531@foxmail.com&#34; storage: &#34;/etc/acme.json&#34; # 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600 httpChallenge: # 固定 entryPoint: &#34;web&#34; # acme的入口 # --------------------------------------- # ## Provider Config ## # --------------------------------------- # ## Provider-1: File ## # ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新 providers: file: filename: &#34;/etc/traefik/provider_file.yaml&#34; # 路径，容器内部 watch: true # auto find and update or not ## Provider-2: Docker ## # docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务 docker: network: traefik # traefik主服务所在的docker子网，建议提前创建好一个子网 exposedByDefault: false # 是否默认监控所有新创建的容器， # 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label # --------------------------------------- # 创建docker子网 docker network create traefik-net">
 
-  <link rel="canonical" href="/posts/14/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/14/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -237,7 +237,7 @@ Traefik主服务启动前 静态配置 静态配置需要在主服务启动之�
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -609,25 +609,25 @@ Traefik主服务启动前 静态配置 静态配置需要在主服务启动之�
 
   <footer class="mt-12 flex flex-wrap"><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/system"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/system"
       >System</a
     ><a
       class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
-      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
       >日常使用</a
     ></footer><nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/15/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/15/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用zerotier-one搭配anyproxy保障多种方式回内网</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/12/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/12/"
       ><span>model.zero_grad() VS. optimzer.zero_grad()</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️

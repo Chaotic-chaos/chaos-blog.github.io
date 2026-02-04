@@ -53,29 +53,29 @@ pyrightconfig.json是python-language-server的配置文件,可以通过在配置
 
 该文件只能放在项目根目录，我尝试过放在.vscode下，language-server并不会主动读取
 " />
-  <meta name="author" content="Chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+  <meta name="author" content="Chaos" /><link rel="preload stylesheet" as="style" href="https://chaotic-chaos.github.io/chaos-blog.github.io/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
 
   
-  <link rel="preload" as="image" href="/theme.png" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/theme.png" />
 
   <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
 
-  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+  <link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/twitter.svg" /><link rel="preload" as="image" href="https://chaotic-chaos.github.io/chaos-blog.github.io/github.svg" />
 
   <script
     defer
-    src="/highlight.min.js"
+    src="https://chaotic-chaos.github.io/chaos-blog.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad()"
   ></script>
 
   
   <link
     rel="icon"
-    href="/favicon.ico"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="/apple-touch-icon.png"
+    href="https://chaotic-chaos.github.io/chaos-blog.github.io/apple-touch-icon.png"
   />
 
   <meta name="generator" content="Hugo 0.155.2">
@@ -83,7 +83,7 @@ pyrightconfig.json是python-language-server的配置文件,可以通过在配置
   <meta itemprop="description" content="症状提要 使用VsCode很长时间了，作为Python的主力开发IDE真的蛮不错，但是最近在连接服务器进行远程开发时，总是会遇到代码提示完全出不来，整个VSCode像是一个完全没有任何代码功能的文本编辑器，摸黑写代码 经过一番痛苦的问题定位，发现log中有一点线索： Ctrl&#43;P打开命令面板，输入&gt; Python: Language Server show output （忘记保留截图了）日志里有很明显的language-server启动行，但是启动之后一直在检索整个项目文件夹，在超过timeout之后会报出一条wraning提示说&#34;检索时间过长&#34;，但是很明显，server仍然会在后台继续检索，并不会抛出异常 到这里，问题线索就比较清晰了，我的文件夹下包含有大量的非代码文件（如数据集/音频wav/音频flac等），vscode的python-laguage-server不停的在检索这类文件，在未检索完成之前是不会有任何代码提示的 解决方案 pyrightconfig.json是python-language-server的配置文件,可以通过在配置文件中指定排除项来跳过其对该目录项的检索,从而加速整个检索过程,解决vsc卡顿的问题 配置示例: { &#34;exclude&#34;: [ &#34;data&#34; ] } 其中，exclude项是一个数组，可以自由增加所需要忽略的项，遵循.*ignore的书写规范 注意 该文件只能放在项目根目录，我尝试过放在.vscode下，language-server并不会主动读取">
   <meta itemprop="datePublished" content="2023-08-28T23:45:00+00:00">
   <meta itemprop="dateModified" content="2023-08-28T23:45:00+00:00">
-  <meta itemprop="wordCount" content="23"><meta property="og:url" content="/posts/2023-08-28-vscode_python_language_server%E5%8D%A1%E9%A1%BF/">
+  <meta itemprop="wordCount" content="23"><meta property="og:url" content="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/2023-08-28-vscode_python_language_server%E5%8D%A1%E9%A1%BF/">
   <meta property="og:site_name" content="Chaos">
   <meta property="og:title" content="VsCode中，Python插件的Python Language Server造成的卡顿问题">
   <meta property="og:description" content="症状提要 使用VsCode很长时间了，作为Python的主力开发IDE真的蛮不错，但是最近在连接服务器进行远程开发时，总是会遇到代码提示完全出不来，整个VSCode像是一个完全没有任何代码功能的文本编辑器，摸黑写代码 经过一番痛苦的问题定位，发现log中有一点线索： Ctrl&#43;P打开命令面板，输入&gt; Python: Language Server show output （忘记保留截图了）日志里有很明显的language-server启动行，但是启动之后一直在检索整个项目文件夹，在超过timeout之后会报出一条wraning提示说&#34;检索时间过长&#34;，但是很明显，server仍然会在后台继续检索，并不会抛出异常 到这里，问题线索就比较清晰了，我的文件夹下包含有大量的非代码文件（如数据集/音频wav/音频flac等），vscode的python-laguage-server不停的在检索这类文件，在未检索完成之前是不会有任何代码提示的 解决方案 pyrightconfig.json是python-language-server的配置文件,可以通过在配置文件中指定排除项来跳过其对该目录项的检索,从而加速整个检索过程,解决vsc卡顿的问题 配置示例: { &#34;exclude&#34;: [ &#34;data&#34; ] } 其中，exclude项是一个数组，可以自由增加所需要忽略的项，遵循.*ignore的书写规范 注意 该文件只能放在项目根目录，我尝试过放在.vscode下，language-server并不会主动读取">
@@ -97,7 +97,7 @@ pyrightconfig.json是python-language-server的配置文件,可以通过在配置
   <meta name="twitter:title" content="VsCode中，Python插件的Python Language Server造成的卡顿问题">
   <meta name="twitter:description" content="症状提要 使用VsCode很长时间了，作为Python的主力开发IDE真的蛮不错，但是最近在连接服务器进行远程开发时，总是会遇到代码提示完全出不来，整个VSCode像是一个完全没有任何代码功能的文本编辑器，摸黑写代码 经过一番痛苦的问题定位，发现log中有一点线索： Ctrl&#43;P打开命令面板，输入&gt; Python: Language Server show output （忘记保留截图了）日志里有很明显的language-server启动行，但是启动之后一直在检索整个项目文件夹，在超过timeout之后会报出一条wraning提示说&#34;检索时间过长&#34;，但是很明显，server仍然会在后台继续检索，并不会抛出异常 到这里，问题线索就比较清晰了，我的文件夹下包含有大量的非代码文件（如数据集/音频wav/音频flac等），vscode的python-laguage-server不停的在检索这类文件，在未检索完成之前是不会有任何代码提示的 解决方案 pyrightconfig.json是python-language-server的配置文件,可以通过在配置文件中指定排除项来跳过其对该目录项的检索,从而加速整个检索过程,解决vsc卡顿的问题 配置示例: { &#34;exclude&#34;: [ &#34;data&#34; ] } 其中，exclude项是一个数组，可以自由增加所需要忽略的项，遵循.*ignore的书写规范 注意 该文件只能放在项目根目录，我尝试过放在.vscode下，language-server并不会主动读取">
 
-  <link rel="canonical" href="/posts/2023-08-28-vscode_python_language_server%E5%8D%A1%E9%A1%BF/" />
+  <link rel="canonical" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/2023-08-28-vscode_python_language_server%E5%8D%A1%E9%A1%BF/" />
 </head>
 <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -107,7 +107,7 @@ pyrightconfig.json是python-language-server的配置文件,可以通过在配置
   <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
     <a
       class="-translate-y-[1px] text-2xl font-medium"
-      href="/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/"
       >Chaos</a
     >
     <div
@@ -233,17 +233,17 @@ pyrightconfig.json是python-language-server的配置文件,可以通过在配置
 
   <nav
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
-  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/2/"
+  ><a class="ltr:pr-3 rtl:pl-3" href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/2/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>转载一篇将各种协议说清楚的文章</span></a
     ><a
       class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
-      href="/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/"
+      href="https://chaotic-chaos.github.io/chaos-blog.github.io/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/"
       ><span>交换机中的“镜像”</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     ></nav></article></main><footer
   class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
 >
   <div class="mr-auto">&copy;2026
-    <a class="link" href="/">Chaos</a></div>
+    <a class="link" href="https://chaotic-chaos.github.io/chaos-blog.github.io/">Chaos</a></div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
     >powered by hugo️️</a
   >️
