@@ -1,0 +1,643 @@
+<!doctype html>
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg:#faf8f1"
+  lang="en-us"
+  dir="ltr"
+><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Treafik反代保姆级急速上手 - Chaos</title>
+
+  
+  <meta name="theme-color" />
+
+  <meta name="description" content="需求场景
+
+所有需要反代的场景
+服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本&hellip;
+
+什么是Treafik
+
+Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理
+Treafik可以自适应并动态自动发现你添加的所有服务、容器等等
+Treafik适配了当前主流的所有服务技术（docker, k8s&hellip;），这意味着你可以一次配置，终生动态，非常适合我这种懒人&hellip;
+
+正式使用
+概念
+
+这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读
+
+静态配置
+
+Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务
+主要包括
+
+全局配置项（Global）
+日志配置项（Log）
+入口点（Entrypoints）
+安全证书（TLS）
+提供者声明（Provider）
+
+
+该文件对应docker中/etc/traefik/traefik.yaml
+容器启动时Traefik会自动在/etc/traefik/目录下寻找traefik.toml/traefik.yaml/traefik.yml文件作为其静态配置
+Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅文档
+
+动态配置
+
+基本等同于各个来源的Provider配置
+主要需要编辑的是File Provider文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service）
+
+提供者/Providers
+
+简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址
+该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现
+本教程中将只会展示两种Provider的配置方式，其他更多的请查阅文档
+
+入口点/EntryPoints
+
+即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口
+所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡
+可以开设多个入口点，一般为80&#43;443
+
+路由/Routers
+
+Traefik对外暴露的规则及其对内的具体服务路由规则
+在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则
+在这里定义Traefik在接受到特定请求时该路由到的服务/Services
+
+服务/Services
+
+路由所要代理的具体服务地址
+这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅文档
+
+
+开始/Let the Traefik Go
+
+这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档
+
+Traefik主服务启动前
+静态配置
+
+静态配置需要在主服务启动之前完全确定下来并映射进容器/etc/traefik/中，主服务只会在启动、重启时读取一次，后续不再监控更改
+文件名必须为traefik.yaml或traefik.tmol或traefik.yml
+这里贴出我的配置，具体作用见配置项名或注释
+
+###########################################
+#                                         #
+# Main Configuration File for Treafik     #
+# By Chaos                                #
+#                                         #
+###########################################
+
+## Global Config ##
+# --------------------------------------- #
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+# --------------------------------------- #
+
+## Log Config ##
+# --------------------------------------- #
+log:
+  # all the path is defined in the container
+  # u need to map it outside
+  filePath: &#34;/etc/logs/run.log&#34;
+  level: &#34;DEBUG&#34;
+  format: &#34;json&#34;
+accesslog:
+  filePath: &#34;/etc/logs/access.log&#34;
+  bufferingSize: 100
+  format: &#34;json&#34;
+# --------------------------------------- #
+
+## Api Config ##
+# --------------------------------------- #
+# 开启Traefik的控制看板
+api:
+  dashboard: true
+  insecure: true
+# --------------------------------------- #
+
+## Entrypoints Config ##
+# --------------------------------------- #
+# Definition
+entryPoints:
+  web: # EntryPoint name
+    address: &#34;:80&#34;  # EntryPoint address, must be string, not a integer
+  web-secure:
+    address: &#34;:443&#34;
+  frps-control:
+    address: &#34;:446&#34;
+# --------------------------------------- #
+
+## TLS Config ##
+# --------------------------------------- #
+certificatesResolvers:
+  sample: # 自定义名称，后边会用
+    acme: # 固定
+      email: &#34;life0531@foxmail.com&#34;
+      storage: &#34;/etc/acme.json&#34; # 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600
+      httpChallenge: # 固定
+        entryPoint: &#34;web&#34; # acme的入口
+# --------------------------------------- #
+
+## Provider Config ##
+# --------------------------------------- #
+## Provider-1: File ##
+# ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新
+providers:
+  file:
+    filename: &#34;/etc/traefik/provider_file.yaml&#34; # 路径，容器内部
+    watch: true # auto find and update or not
+  
+## Provider-2: Docker ##
+# docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务
+  docker:
+    network: traefik # traefik主服务所在的docker子网，建议提前创建好一个子网
+    exposedByDefault: false # 是否默认监控所有新创建的容器，
+                            # 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label
+# --------------------------------------- #
+创建docker子网
+docker network create traefik-net" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+
+  
+  <link rel="preload" as="image" href="/theme.png" />
+
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
+
+  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+
+  <script
+    defer
+    src="/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad()"
+  ></script>
+
+  
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/apple-touch-icon.png"
+  />
+
+  <meta name="generator" content="Hugo 0.155.2">
+  <meta itemprop="name" content="Treafik反代保姆级急速上手">
+  <meta itemprop="description" content="需求场景 所有需要反代的场景 服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本… 什么是Treafik Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理 Treafik可以自适应并动态自动发现你添加的所有服务、容器等等 Treafik适配了当前主流的所有服务技术（docker, k8s…），这意味着你可以一次配置，终生动态，非常适合我这种懒人… 正式使用 概念 这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读
+静态配置 Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务 主要包括 全局配置项（Global） 日志配置项（Log） 入口点（Entrypoints） 安全证书（TLS） 提供者声明（Provider） 该文件对应docker中/etc/traefik/traefik.yaml 容器启动时Traefik会自动在/etc/traefik/目录下寻找traefik.toml/traefik.yaml/traefik.yml文件作为其静态配置 Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅文档 动态配置 基本等同于各个来源的Provider配置 主要需要编辑的是File Provider文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service） 提供者/Providers 简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址 该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现 本教程中将只会展示两种Provider的配置方式，其他更多的请查阅文档 入口点/EntryPoints 即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口 所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡 可以开设多个入口点，一般为80&#43;443 路由/Routers Traefik对外暴露的规则及其对内的具体服务路由规则 在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则 在这里定义Traefik在接受到特定请求时该路由到的服务/Services 服务/Services 路由所要代理的具体服务地址 这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅文档 开始/Let the Traefik Go 这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档
+Traefik主服务启动前 静态配置 静态配置需要在主服务启动之前完全确定下来并映射进容器/etc/traefik/中，主服务只会在启动、重启时读取一次，后续不再监控更改 文件名必须为traefik.yaml或traefik.tmol或traefik.yml 这里贴出我的配置，具体作用见配置项名或注释 ########################################### # # # Main Configuration File for Treafik # # By Chaos # # # ########################################### ## Global Config ## # --------------------------------------- # global: checkNewVersion: true sendAnonymousUsage: false # --------------------------------------- # ## Log Config ## # --------------------------------------- # log: # all the path is defined in the container # u need to map it outside filePath: &#34;/etc/logs/run.log&#34; level: &#34;DEBUG&#34; format: &#34;json&#34; accesslog: filePath: &#34;/etc/logs/access.log&#34; bufferingSize: 100 format: &#34;json&#34; # --------------------------------------- # ## Api Config ## # --------------------------------------- # # 开启Traefik的控制看板 api: dashboard: true insecure: true # --------------------------------------- # ## Entrypoints Config ## # --------------------------------------- # # Definition entryPoints: web: # EntryPoint name address: &#34;:80&#34; # EntryPoint address, must be string, not a integer web-secure: address: &#34;:443&#34; frps-control: address: &#34;:446&#34; # --------------------------------------- # ## TLS Config ## # --------------------------------------- # certificatesResolvers: sample: # 自定义名称，后边会用 acme: # 固定 email: &#34;life0531@foxmail.com&#34; storage: &#34;/etc/acme.json&#34; # 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600 httpChallenge: # 固定 entryPoint: &#34;web&#34; # acme的入口 # --------------------------------------- # ## Provider Config ## # --------------------------------------- # ## Provider-1: File ## # ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新 providers: file: filename: &#34;/etc/traefik/provider_file.yaml&#34; # 路径，容器内部 watch: true # auto find and update or not ## Provider-2: Docker ## # docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务 docker: network: traefik # traefik主服务所在的docker子网，建议提前创建好一个子网 exposedByDefault: false # 是否默认监控所有新创建的容器， # 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label # --------------------------------------- # 创建docker子网 docker network create traefik-net">
+  <meta itemprop="datePublished" content="2021-12-30T15:21:00+00:00">
+  <meta itemprop="dateModified" content="2021-12-30T15:21:00+00:00">
+  <meta itemprop="wordCount" content="490">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/14/">
+  <meta property="og:site_name" content="Chaos">
+  <meta property="og:title" content="Treafik反代保姆级急速上手">
+  <meta property="og:description" content="需求场景 所有需要反代的场景 服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本… 什么是Treafik Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理 Treafik可以自适应并动态自动发现你添加的所有服务、容器等等 Treafik适配了当前主流的所有服务技术（docker, k8s…），这意味着你可以一次配置，终生动态，非常适合我这种懒人… 正式使用 概念 这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读
+静态配置 Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务 主要包括 全局配置项（Global） 日志配置项（Log） 入口点（Entrypoints） 安全证书（TLS） 提供者声明（Provider） 该文件对应docker中/etc/traefik/traefik.yaml 容器启动时Traefik会自动在/etc/traefik/目录下寻找traefik.toml/traefik.yaml/traefik.yml文件作为其静态配置 Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅文档 动态配置 基本等同于各个来源的Provider配置 主要需要编辑的是File Provider文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service） 提供者/Providers 简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址 该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现 本教程中将只会展示两种Provider的配置方式，其他更多的请查阅文档 入口点/EntryPoints 即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口 所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡 可以开设多个入口点，一般为80&#43;443 路由/Routers Traefik对外暴露的规则及其对内的具体服务路由规则 在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则 在这里定义Traefik在接受到特定请求时该路由到的服务/Services 服务/Services 路由所要代理的具体服务地址 这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅文档 开始/Let the Traefik Go 这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档
+Traefik主服务启动前 静态配置 静态配置需要在主服务启动之前完全确定下来并映射进容器/etc/traefik/中，主服务只会在启动、重启时读取一次，后续不再监控更改 文件名必须为traefik.yaml或traefik.tmol或traefik.yml 这里贴出我的配置，具体作用见配置项名或注释 ########################################### # # # Main Configuration File for Treafik # # By Chaos # # # ########################################### ## Global Config ## # --------------------------------------- # global: checkNewVersion: true sendAnonymousUsage: false # --------------------------------------- # ## Log Config ## # --------------------------------------- # log: # all the path is defined in the container # u need to map it outside filePath: &#34;/etc/logs/run.log&#34; level: &#34;DEBUG&#34; format: &#34;json&#34; accesslog: filePath: &#34;/etc/logs/access.log&#34; bufferingSize: 100 format: &#34;json&#34; # --------------------------------------- # ## Api Config ## # --------------------------------------- # # 开启Traefik的控制看板 api: dashboard: true insecure: true # --------------------------------------- # ## Entrypoints Config ## # --------------------------------------- # # Definition entryPoints: web: # EntryPoint name address: &#34;:80&#34; # EntryPoint address, must be string, not a integer web-secure: address: &#34;:443&#34; frps-control: address: &#34;:446&#34; # --------------------------------------- # ## TLS Config ## # --------------------------------------- # certificatesResolvers: sample: # 自定义名称，后边会用 acme: # 固定 email: &#34;life0531@foxmail.com&#34; storage: &#34;/etc/acme.json&#34; # 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600 httpChallenge: # 固定 entryPoint: &#34;web&#34; # acme的入口 # --------------------------------------- # ## Provider Config ## # --------------------------------------- # ## Provider-1: File ## # ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新 providers: file: filename: &#34;/etc/traefik/provider_file.yaml&#34; # 路径，容器内部 watch: true # auto find and update or not ## Provider-2: Docker ## # docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务 docker: network: traefik # traefik主服务所在的docker子网，建议提前创建好一个子网 exposedByDefault: false # 是否默认监控所有新创建的容器， # 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label # --------------------------------------- # 创建docker子网 docker network create traefik-net">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-12-30T15:21:00+00:00">
+    <meta property="article:modified_time" content="2021-12-30T15:21:00+00:00">
+    <meta property="article:tag" content="System">
+    <meta property="article:tag" content="日常使用">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Treafik反代保姆级急速上手">
+  <meta name="twitter:description" content="需求场景 所有需要反代的场景 服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本… 什么是Treafik Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理 Treafik可以自适应并动态自动发现你添加的所有服务、容器等等 Treafik适配了当前主流的所有服务技术（docker, k8s…），这意味着你可以一次配置，终生动态，非常适合我这种懒人… 正式使用 概念 这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读
+静态配置 Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务 主要包括 全局配置项（Global） 日志配置项（Log） 入口点（Entrypoints） 安全证书（TLS） 提供者声明（Provider） 该文件对应docker中/etc/traefik/traefik.yaml 容器启动时Traefik会自动在/etc/traefik/目录下寻找traefik.toml/traefik.yaml/traefik.yml文件作为其静态配置 Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅文档 动态配置 基本等同于各个来源的Provider配置 主要需要编辑的是File Provider文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service） 提供者/Providers 简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址 该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现 本教程中将只会展示两种Provider的配置方式，其他更多的请查阅文档 入口点/EntryPoints 即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口 所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡 可以开设多个入口点，一般为80&#43;443 路由/Routers Traefik对外暴露的规则及其对内的具体服务路由规则 在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则 在这里定义Traefik在接受到特定请求时该路由到的服务/Services 服务/Services 路由所要代理的具体服务地址 这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅文档 开始/Let the Traefik Go 这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档
+Traefik主服务启动前 静态配置 静态配置需要在主服务启动之前完全确定下来并映射进容器/etc/traefik/中，主服务只会在启动、重启时读取一次，后续不再监控更改 文件名必须为traefik.yaml或traefik.tmol或traefik.yml 这里贴出我的配置，具体作用见配置项名或注释 ########################################### # # # Main Configuration File for Treafik # # By Chaos # # # ########################################### ## Global Config ## # --------------------------------------- # global: checkNewVersion: true sendAnonymousUsage: false # --------------------------------------- # ## Log Config ## # --------------------------------------- # log: # all the path is defined in the container # u need to map it outside filePath: &#34;/etc/logs/run.log&#34; level: &#34;DEBUG&#34; format: &#34;json&#34; accesslog: filePath: &#34;/etc/logs/access.log&#34; bufferingSize: 100 format: &#34;json&#34; # --------------------------------------- # ## Api Config ## # --------------------------------------- # # 开启Traefik的控制看板 api: dashboard: true insecure: true # --------------------------------------- # ## Entrypoints Config ## # --------------------------------------- # # Definition entryPoints: web: # EntryPoint name address: &#34;:80&#34; # EntryPoint address, must be string, not a integer web-secure: address: &#34;:443&#34; frps-control: address: &#34;:446&#34; # --------------------------------------- # ## TLS Config ## # --------------------------------------- # certificatesResolvers: sample: # 自定义名称，后边会用 acme: # 固定 email: &#34;life0531@foxmail.com&#34; storage: &#34;/etc/acme.json&#34; # 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600 httpChallenge: # 固定 entryPoint: &#34;web&#34; # acme的入口 # --------------------------------------- # ## Provider Config ## # --------------------------------------- # ## Provider-1: File ## # ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新 providers: file: filename: &#34;/etc/traefik/provider_file.yaml&#34; # 路径，容器内部 watch: true # auto find and update or not ## Provider-2: Docker ## # docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务 docker: network: traefik # traefik主服务所在的docker子网，建议提前创建好一个子网 exposedByDefault: false # 是否默认监控所有新创建的容器， # 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label # --------------------------------------- # 创建docker子网 docker network create traefik-net">
+
+  <link rel="canonical" href="/posts/14/" />
+</head>
+<body
+    class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
+  ><header
+  class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"
+>
+  <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
+    <a
+      class="-translate-y-[1px] text-2xl font-medium"
+      href="/"
+      >Chaos</a
+    >
+    <div
+      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? "rgb(0 0 0 / 85%)" : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"
+  ><nav
+      class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"
+    ><a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="posts/about"
+        >About</a
+      ></nav><nav
+      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+    >
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/map[creator:%20site:]"
+        target="_blank"
+        rel="me"
+      >twitter</a>
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/github.com/Chaotic-chaos"
+        target="_blank"
+        rel="me"
+      >github</a>
+    </nav>
+  </div>
+</header>
+<main
+      class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"
+    ><article>
+  <header class="mb-14">
+    <h1 class="my-0! pb-2.5">Treafik反代保姆级急速上手</h1><div class="text-xs antialiased opacity-60"><time>Dec 30, 2021</time><span class="mx-1">&middot;</span>
+      <span>chaos</span></div></header>
+
+  <section><h1 id="需求场景">需求场景</h1>
+<ul>
+<li>所有需要反代的场景</li>
+<li>服务器上部署了太多的docker、frp映射等服务，每个服务都占用着各自的端口，多的以至于为了记忆这些服务端口我专门要维护一个记事本&hellip;</li>
+</ul>
+<h1 id="什么是treafik">什么是Treafik</h1>
+<ul>
+<li>Traefik是一个开源的可以使得服务发布变得轻松有趣的 边缘路由器。它负责接收你系统的请求，然后使用合适的组件来对这些请求进行处理</li>
+<li>Treafik可以自适应并动态自动发现你添加的所有服务、容器等等</li>
+<li>Treafik适配了当前主流的所有服务技术（docker, k8s&hellip;），这意味着你可以一次配置，终生动态，非常适合我这种懒人&hellip;</li>
+</ul>
+<h1 id="正式使用">正式使用</h1>
+<h2 id="概念">概念</h2>
+<blockquote>
+<p>这里用最直白的语言介绍traefik配置中的几个概念，对后边直接上手写配置有一定帮助，建议阅读</p>
+</blockquote>
+<h3 id="静态配置">静态配置</h3>
+<ul>
+<li>Traefik初始启动时会读取的配置文件，该配置仅读取一次，后面更改需要重启服务</li>
+<li>主要包括
+<ul>
+<li>全局配置项（Global）</li>
+<li>日志配置项（Log）</li>
+<li>入口点（Entrypoints）</li>
+<li>安全证书（TLS）</li>
+<li>提供者声明（Provider）</li>
+</ul>
+</li>
+<li>该文件对应docker中<code>/etc/traefik/traefik.yaml</code></li>
+<li>容器启动时Traefik会自动在<code>/etc/traefik/</code>目录下寻找<code>traefik.toml/traefik.yaml/traefik.yml</code>文件作为其静态配置</li>
+<li>Traefik提供了共三种互斥的静态配置方式，另外两种请自行查阅<a href="https://doc.traefik.io/traefik/">文档</a></li>
+</ul>
+<h3 id="动态配置">动态配置</h3>
+<ul>
+<li>基本等同于各个来源的Provider配置</li>
+<li>主要需要编辑的是<code>File Provider</code>文件，该文件包含了所有的动态路由，Traefik会自动检测文件改动并动态发现、添加路由（Router）、服务（Service）</li>
+</ul>
+<h3 id="提供者providers">提供者/Providers</h3>
+<ul>
+<li>简而言之所谓的“提供者”就是告诉Traefik要去哪儿发现所有的路由规则及其对应的服务地址</li>
+<li>该角色（Provider）的独立决定了Traefik天生即适应多入口、多平台的自动适应发现</li>
+<li>本教程中将只会展示两种Provider的配置方式，其他更多的请查阅<a href="https://doc.traefik.io/traefik/">文档</a></li>
+</ul>
+<h3 id="入口点entrypoints">入口点/EntryPoints</h3>
+<ul>
+<li>即Traefik对外暴露的端口，理想状态下也是整台服务器对外暴露的唯一端口</li>
+<li>所有的网络请求通过该端口到达Traefik并由其接管后进行反代分流及负载均衡</li>
+<li>可以开设多个入口点，一般为80+443</li>
+</ul>
+<h3 id="路由routers">路由/Routers</h3>
+<ul>
+<li>Traefik对外暴露的规则及其对内的具体服务路由规则</li>
+<li>在这里定义Traefik所接受的域名、前缀、后缀、路径等等请求规则</li>
+<li>在这里定义Traefik在接受到特定请求时该路由到的服务/Services</li>
+</ul>
+<h3 id="服务services">服务/Services</h3>
+<ul>
+<li>路由所要代理的具体服务地址</li>
+<li>这里可以添加由Traefik管理的负载均衡，后面还可以添加亲和性等高阶使用，具体请查阅<a href="https://doc.traefik.io/traefik/">文档</a></li>
+</ul>
+<hr>
+<h2 id="开始let-the-traefik-go">开始/Let the Traefik Go</h2>
+<blockquote>
+<p>这里采用docker的方式启动，docker-compose以及手动部署等方式请自行查阅文档</p>
+</blockquote>
+<h3 id="traefik主服务启动前">Traefik主服务启动前</h3>
+<h4 id="静态配置-1">静态配置</h4>
+<ul>
+<li>静态配置需要在主服务启动之前完全确定下来并映射进容器<code>/etc/traefik/</code>中，主服务只会在启动、重启时读取一次，后续不再监控更改</li>
+<li>文件名必须为<code>traefik.yaml</code>或<code>traefik.tmol</code>或<code>traefik.yml</code></li>
+<li>这里贴出我的配置，具体作用见配置项名或注释</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e">###########################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#                                         #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Main Configuration File for Treafik     #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># By Chaos                                #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#                                         #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">###########################################</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Global Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">global</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">checkNewVersion</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">sendAnonymousUsage</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Log Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">log</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># all the path is defined in the container</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># u need to map it outside</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">filePath</span>: <span style="color:#e6db74">&#34;/etc/logs/run.log&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">level</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">format</span>: <span style="color:#e6db74">&#34;json&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">accesslog</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">filePath</span>: <span style="color:#e6db74">&#34;/etc/logs/access.log&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">bufferingSize</span>: <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">format</span>: <span style="color:#e6db74">&#34;json&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Api Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 开启Traefik的控制看板</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">api</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dashboard</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">insecure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Entrypoints Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Definition</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">entryPoints</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">web</span>: <span style="color:#75715e"># EntryPoint name</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">address</span>: <span style="color:#e6db74">&#34;:80&#34;</span>  <span style="color:#75715e"># EntryPoint address, must be string, not a integer</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">web-secure</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">address</span>: <span style="color:#e6db74">&#34;:443&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">frps-control</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">address</span>: <span style="color:#e6db74">&#34;:446&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## TLS Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">certificatesResolvers</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">sample</span>: <span style="color:#75715e"># 自定义名称，后边会用</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">acme</span>: <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">email</span>: <span style="color:#e6db74">&#34;life0531@foxmail.com&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">storage</span>: <span style="color:#e6db74">&#34;/etc/acme.json&#34;</span> <span style="color:#75715e"># 证书存储位置，该文件需要事先创建并映射到宿主机，权限为600</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">httpChallenge</span>: <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">entryPoint</span>: <span style="color:#e6db74">&#34;web&#34;</span> <span style="color:#75715e"># acme的入口</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Provider Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Provider-1: File ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ‘文件’形式的提供者，该文件需要在启动前创建，为空与否不重要，后边会自动更新</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">providers</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">file</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">filename</span>: <span style="color:#e6db74">&#34;/etc/traefik/provider_file.yaml&#34;</span> <span style="color:#75715e"># 路径，容器内部</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">watch</span>: <span style="color:#66d9ef">true</span> <span style="color:#75715e"># auto find and update or not</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Provider-2: Docker ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># docker提供者，适配本机docker，自动发现新创建的容器并定义路由、服务</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">docker</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network</span>: <span style="color:#ae81ff">traefik</span> <span style="color:#75715e"># traefik主服务所在的docker子网，建议提前创建好一个子网</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">exposedByDefault</span>: <span style="color:#66d9ef">false</span> <span style="color:#75715e"># 是否默认监控所有新创建的容器，</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e"># 这里设置为false之后每次创建需要被反代的容器时需要添加一个特定label</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --------------------------------------- #</span>
+</span></span></code></pre></div><h4 id="创建docker子网">创建docker子网</h4>
+<p><code>docker network create traefik-net</code></p>
+<h3 id="启动traefik主服务">启动Traefik主服务</h3>
+<ul>
+<li>命令</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker run -d -p 80:80 -p 443:443 -p 446:446 --name traefik <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-v &lt;path_to_traefik.yaml_directory&gt;:/etc/traefik/ <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-v &lt;path_to_acme.json_file&gt;:/etc/acme.json <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-v &lt;path_to_all_the_logs_directory&gt;:/etc/logs/ <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-v /var/run/docker.sock:/var/run/docker.sock <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>--add-host host.docker.internal:host-gateway <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>--network traefik-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>traefik:v2.0
+</span></span></code></pre></div><ul>
+<li>Note：
+<ul>
+<li><code>-v /var/run/docker.sock:/var/run/docker.sock</code>为固定值，需要挂载让Traefik有权限监控docker的启动停止，这里会有一定安全问题，具体解决方案请自行折腾</li>
+<li><code>--add-host host.docker.internal:host-gateway</code>添加宿主机的本地host解析，否则容器内访问宿主机很棘手</li>
+</ul>
+</li>
+</ul>
+<h3 id="编写file-provider">编写File Provider</h3>
+<blockquote>
+<p>文件形式的提供者主要方便宿主机本机不以集群化工具启动的服务的反代、老旧服务的反代等等，灵活易改</p>
+</blockquote>
+<ul>
+<li>示例如下，见注释</li>
+<li>Traefik所有的配置语法均为<code>tmol</code>或<code>yaml</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e">## Routers Config ##</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">http</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># http routers</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">routers</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dashboard</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">rule</span>: <span style="color:#e6db74">&#34;&lt;url rule&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># for more rules, access [here](https://www.qikqiak.com/traefik-book/routing/routers/#_2)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#e6db74">&#34;dashboard&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">middlewares</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;redirect-ssl&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">tls</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">certResolver</span>: <span style="color:#e6db74">&#34;sample&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># http services</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ldashboard</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">loadBalancer</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">servers</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">url</span>: <span style="color:#e6db74">&#34;http://127.0.0.1:8080&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e"># use &#39;http://host.docker.internal:port&#39; if need to access he host</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># http middwares</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">middlewares</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">redirect-ssl</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">redirectScheme</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">scheme</span>: <span style="color:#e6db74">&#34;https&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">permanent</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">443</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">tcp</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># http routers</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">routers</span>: 
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">frps</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">entryPoints</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;frps-control&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">rule</span>: <span style="color:#e6db74">&#34;&lt;tcp rules, details is available in  [here](https://www.qikqiak.com/traefik-book/routing/routers/#_8)&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#e6db74">&#34;frps&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># tcp services</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">frps</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">loadBalancer</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">servers</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">address</span>: <span style="color:#e6db74">&#34;&lt;reverse proxy&#39;s target&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">terminationDelay</span>: <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># --------------------------------------- #</span>
+</span></span></code></pre></div><ul>
+<li>该文件是动态监听更新的，放心大胆的改</li>
+</ul>
+<h3 id="traefik主服务启动的情况下启动需要被反代的docker容器">Traefik主服务启动的情况下启动需要被反代的docker容器</h3>
+<ul>
+<li>照例先贴模板</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker run -d <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>--name<span style="color:#f92672">=</span>&lt;container_name&gt; <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>--expose &lt;ports which the container will use&gt; <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>--network traefik-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.enable=true&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.routers.&lt;container_name&gt;.rule=&lt;url rule&gt;&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.routers.&lt;container_name&gt;.middlewares=redirect&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.routers.&lt;container_name&gt;.tls=true&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.routers.&lt;container_name&gt;.tls.certresolver=sample&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.middlewares.redirect.redirectscheme.scheme=https&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>-l <span style="color:#e6db74">&#34;traefik.http.middlewares.redirect.redirectscheme.permanent=true&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>&lt;image_name&gt;
+</span></span></code></pre></div><ul>
+<li>命令详解
+<ul>
+<li><code>-l &quot;traefik.enable=true&quot;</code>：开启容器暴露，让Traefik帮我代理这个容器</li>
+<li><code>--expose &lt;ports which the container will use&gt;</code>：在刚刚创建的子网中暴露端口，没啥作用，主要怕自己忘</li>
+<li><code>-l &quot;traefik.http.routers.&lt;container_name&gt;.rule=&lt;url rule&gt;&quot;</code>：声明反代规则，这里需要注意反斜杠问题，举个例子:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>-l &#34;traefik.http.routers.&lt;container_name&gt;.rule=Host(\`url.url\`)&#34;
+</code></pre><ul>
+<li><code>-l &quot;traefik.http.routers.&lt;container_name&gt;.middlewares=redirect&quot;</code>：要使用的中间件</li>
+</ul>
+<h3 id="马上结束了">马上结束了！</h3>
+<ul>
+<li>此时访问刚刚定义的url规则，应该能看到Traefik的dashboard，一切正常！</li>
+</ul>
+<h1 id="后记">后记</h1>
+<ul>
+<li>Traefik给我这种不愿意记忆乱七八糟端口的懒人提供了非常方便简单的一键配置</li>
+<li>该文只是给想体验Traefik的同学一个快速、简单的上手路线，以最简单、我能理解的方式将Traefik的主要概念、配置项进行解释并给出示例</li>
+<li>由于本人水平有限，有些地方可能存在错误或者理解不到位，feel free to ask any questions!</li>
+</ul>
+</section>
+
+  <footer class="mt-12 flex flex-wrap"><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/system"
+      >System</a
+    ><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      >日常使用</a
+    ></footer><nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/15/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用zerotier-one搭配anyproxy保障多种方式回内网</span></a
+    ><a
+      class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
+      href="/posts/12/"
+      ><span>model.zero_grad() VS. optimzer.zero_grad()</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    ></nav></article></main><footer
+  class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
+>
+  <div class="mr-auto">&copy;2026
+    <a class="link" href="/">Chaos</a></div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+</body>
+</html>

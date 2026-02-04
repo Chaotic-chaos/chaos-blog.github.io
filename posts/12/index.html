@@ -1,0 +1,276 @@
+<!doctype html>
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg:#faf8f1"
+  lang="en-us"
+  dir="ltr"
+><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>model.zero_grad() VS. optimzer.zero_grad() - Chaos</title>
+
+  
+  <meta name="theme-color" />
+
+  <meta name="description" content="引言
+
+在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度
+在阅读不同的代码时，总能看到不同的清空代码：
+
+model.zero_grad()
+optimizer.zero_grad()
+
+
+
+正文
+
+上述两种梯度清空的方式均有效，区别在于起作用的范围不同
+model.zero_grad()
+
+此时mdoel包含的所有参数上的梯度均被清空
+
+
+optimizer.zero_grad()
+
+此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空
+若模型训练过程中只有一个优化器，即优化器构造时使用
+
+   optimizer = optim.Optimiers(model.parameters(), lr=args.lr)
+此时上述两种梯度清空方式完全等价
+
+总结
+
+两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同
+对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空
+" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+
+  
+  <link rel="preload" as="image" href="/theme.png" />
+
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
+
+  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+
+  <script
+    defer
+    src="/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad()"
+  ></script>
+
+  
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/apple-touch-icon.png"
+  />
+
+  <meta name="generator" content="Hugo 0.155.2">
+  <meta itemprop="name" content="model.zero_grad() VS. optimzer.zero_grad()">
+  <meta itemprop="description" content="引言 在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度 在阅读不同的代码时，总能看到不同的清空代码： model.zero_grad() optimizer.zero_grad() 正文 上述两种梯度清空的方式均有效，区别在于起作用的范围不同 model.zero_grad() 此时mdoel包含的所有参数上的梯度均被清空 optimizer.zero_grad() 此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空 若模型训练过程中只有一个优化器，即优化器构造时使用 optimizer = optim.Optimiers(model.parameters(), lr=args.lr) 此时上述两种梯度清空方式完全等价 总结 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空">
+  <meta itemprop="datePublished" content="2021-11-30T10:19:00+00:00">
+  <meta itemprop="dateModified" content="2021-11-30T10:19:00+00:00">
+  <meta itemprop="wordCount" content="20">
+  <meta itemprop="keywords" content="Python,深度学习"><meta property="og:url" content="/posts/12/">
+  <meta property="og:site_name" content="Chaos">
+  <meta property="og:title" content="model.zero_grad() VS. optimzer.zero_grad()">
+  <meta property="og:description" content="引言 在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度 在阅读不同的代码时，总能看到不同的清空代码： model.zero_grad() optimizer.zero_grad() 正文 上述两种梯度清空的方式均有效，区别在于起作用的范围不同 model.zero_grad() 此时mdoel包含的所有参数上的梯度均被清空 optimizer.zero_grad() 此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空 若模型训练过程中只有一个优化器，即优化器构造时使用 optimizer = optim.Optimiers(model.parameters(), lr=args.lr) 此时上述两种梯度清空方式完全等价 总结 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-11-30T10:19:00+00:00">
+    <meta property="article:modified_time" content="2021-11-30T10:19:00+00:00">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="深度学习">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="model.zero_grad() VS. optimzer.zero_grad()">
+  <meta name="twitter:description" content="引言 在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度 在阅读不同的代码时，总能看到不同的清空代码： model.zero_grad() optimizer.zero_grad() 正文 上述两种梯度清空的方式均有效，区别在于起作用的范围不同 model.zero_grad() 此时mdoel包含的所有参数上的梯度均被清空 optimizer.zero_grad() 此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空 若模型训练过程中只有一个优化器，即优化器构造时使用 optimizer = optim.Optimiers(model.parameters(), lr=args.lr) 此时上述两种梯度清空方式完全等价 总结 两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同 对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空">
+
+  <link rel="canonical" href="/posts/12/" />
+</head>
+<body
+    class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
+  ><header
+  class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"
+>
+  <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
+    <a
+      class="-translate-y-[1px] text-2xl font-medium"
+      href="/"
+      >Chaos</a
+    >
+    <div
+      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? "rgb(0 0 0 / 85%)" : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"
+  ><nav
+      class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"
+    ><a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="posts/about"
+        >About</a
+      ></nav><nav
+      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+    >
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/map[creator:%20site:]"
+        target="_blank"
+        rel="me"
+      >twitter</a>
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/github.com/Chaotic-chaos"
+        target="_blank"
+        rel="me"
+      >github</a>
+    </nav>
+  </div>
+</header>
+<main
+      class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"
+    ><article>
+  <header class="mb-14">
+    <h1 class="my-0! pb-2.5">model.zero_grad() VS. optimzer.zero_grad()</h1><div class="text-xs antialiased opacity-60"><time>Nov 30, 2021</time><span class="mx-1">&middot;</span>
+      <span>chaos</span></div></header>
+
+  <section><h2 id="引言">引言</h2>
+<ul>
+<li>在模型训练时，每个Batch反向传播完成后我们需要手动清除计算图上本次迭代的所有梯度</li>
+<li>在阅读不同的代码时，总能看到不同的清空代码：
+<ul>
+<li><code>model.zero_grad()</code></li>
+<li><code>optimizer.zero_grad()</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="正文">正文</h2>
+<ul>
+<li>上述两种梯度清空的方式均有效，区别在于起作用的范围不同</li>
+<li><code>model.zero_grad()</code>
+<ul>
+<li>此时<code>mdoel</code>包含的所有参数上的梯度均被清空</li>
+</ul>
+</li>
+<li><code>optimizer.zero_grad()</code>
+<ul>
+<li>此时该优化器中负责更新的模型参数上的梯度被清空，即不一定是全部的梯度被清空</li>
+<li>若模型训练过程中只有一个优化器，即优化器构造时使用</li>
+</ul>
+<pre tabindex="0"><code>   optimizer = optim.Optimiers(model.parameters(), lr=args.lr)
+</code></pre>此时上述两种梯度清空方式完全等价</li>
+</ul>
+<h2 id="总结">总结</h2>
+<ul>
+<li>两种不同的梯度清零方式在多数场景下基本等价，其区别在于作用范围不同</li>
+<li>对于多任务训练、多优化器的训练中，需要根据具体训练策略的不同对参数梯度进行不同作用范围的清空</li>
+</ul>
+</section>
+
+  <footer class="mt-12 flex flex-wrap"><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/python"
+      >Python</a
+    ><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"
+      >深度学习</a
+    ></footer><nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/14/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Treafik反代保姆级急速上手</span></a
+    ><a
+      class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
+      href="/posts/11/"
+      ><span>windows平台下配置Texlive&#43;Texstudio书写LaTex文本</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    ></nav></article></main><footer
+  class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
+>
+  <div class="mr-auto">&copy;2026
+    <a class="link" href="/">Chaos</a></div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+</body>
+</html>

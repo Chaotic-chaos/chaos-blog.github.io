@@ -1,0 +1,372 @@
+<!doctype html>
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg:#faf8f1"
+  lang="en-us"
+  dir="ltr"
+><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>交换机中的“镜像” - Chaos</title>
+
+  
+  <meta name="theme-color" />
+
+  <meta name="description" content="写在开头
+
+“镜像”这个词其实对应着计算机领域内两个（或许更多）截然不同的概念，这两个概念并没有谁更常用之类的区别，因此在使用时需要根据当时当刻的上下文信息进行不同的区分：
+
+
+Image(镜像)：这类一般出现在“系统镜像（iso文件）”、“容器镜像（docker）”这类语境下，其指代的是一个物理存在的数据文件，这个文件往往是某个运行环境的静态存储，即根据该镜像可以run起来一些需要被保留的状态现场等。
+Mirror(镜像)：顾名思义，将某个东西“照镜子”一样的照搬过来，供给下游应用；这种语境下，镜像指代的是对某些数据、流量或者状态进行无差别/有差别的转发，“镜像”操作关注于（转发源，转发目的地）两个概念。
+
+正文
+
+交换机中的“镜像”使用的是“mirror”词义，即对网络流量的有条件/无条件转发，供给下游监控、漏扫等应用进行使用。
+
+什么是交换机镜像
+
+镜像是将指定“源（source）”的网络流量（这里指报文）完整的复制一份到“目的地（destination）”。目的地与监控、漏扫设备直接或者间接相连，在很多情况下，监控设备上都会安装相应的流量分析软件，对镜像转发的报文进行进一步的分析
+当网络中出现存在攻击流量或者故障报文时，网管可以使用镜像功能无损的接入该网络，抓取报文进行分析排障等
+根据镜像源的不同，交换机镜像往往可以分为如下几种：
+
+端口镜像：将指定端口的流量转发到目标端口
+流镜像：将流经网络设备的所有符合规则（Access Control List, ACL）的报文镜像转发的目标端口
+VLAN镜像：将指定VLAN（Virtual Local Area Network）内所有活动网络接口的报文镜像转发到目标端口
+MAC镜像：将指定VLAN内的从“源MAC地址”到“目标MAC地址”设备的报文进行镜像转发到目标端口
+
+
+根据目的端口与监控设备的连接方式，可以分为如下两类：
+
+本地镜像：源端口与目标端口在同一个设备上，与监控设备直接物理互连
+远程镜像：源端口和目标端口不在同一个设备或部分在同一个设备上，与监控设备通过网络互联
+
+
+
+
+Notes：镜像的目标都是一个“端口”，但源可能是网络设备、端口或者物理接口等多种不同的设备
+
+镜像的工作原理
+
+交换机镜像的工作原理差不多，这里仅以最常见的端口镜像作为例子进行说明
+
+
+端口镜像是将网络设备上指定端口接收或发送的报文复制到目的端口，可以只复制端口接收或者发送的报文，也可以同时复制接收和发送的报文。指定端口称为镜像端口，目标端口称为观察端口。
+
+本地镜像
+
+
+如上图所示，DeviceA上的镜像端口（源）在接收或发送报文的时候，会将报文复制一份到观察端口（目标）。观察端口与监控设备直接相连，接收复制的原始报文进行进一步的分析处理等，因此本实例是一个典型的本地镜像
+
+远程镜像
+
+
+
+远程镜像通常有两种连接方式：
+
+目的端口通过二层网络与监控设备相连的场景称为二层远程镜像RSPAN（Remote Switched Port Analyzer）
+
+
+目的端口通过三层网络与监控设备相连的场景称为三层远程镜像ERSPAN（Encapsulated Remote Switched Port Analyzer）
+
+
+
+上图是一个典型的远程镜像实例，观察端口将复制的报文发送给监控设备前会添加一层VLAN Tag或进行GRE封装，便于复制的报文能够穿过中间的二层网络/三层网络，到达监控设备。
+
+
+总结
+总的来讲，交换机镜像是为了方便网络管理员进行网络内探查、排障或者漏扫等等操作而提出的一种概念，本质上是对网络内的特定或非特定数据流量进行无条件或有条件的转发，以便下游的监控、漏扫或分析工具获取到原始数据流，并对其进行进一步的分析等。
+
+参考资料
+
+华为设备百科-镜像
+" />
+  <meta name="author" content="Chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+
+  
+  <link rel="preload" as="image" href="/theme.png" />
+
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
+
+  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+
+  <script
+    defer
+    src="/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad()"
+  ></script>
+
+  
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/apple-touch-icon.png"
+  />
+
+  <meta name="generator" content="Hugo 0.155.2">
+  <meta itemprop="name" content="交换机中的“镜像”">
+  <meta itemprop="description" content="写在开头 “镜像”这个词其实对应着计算机领域内两个（或许更多）截然不同的概念，这两个概念并没有谁更常用之类的区别，因此在使用时需要根据当时当刻的上下文信息进行不同的区分：
+Image(镜像)：这类一般出现在“系统镜像（iso文件）”、“容器镜像（docker）”这类语境下，其指代的是一个物理存在的数据文件，这个文件往往是某个运行环境的静态存储，即根据该镜像可以run起来一些需要被保留的状态现场等。 Mirror(镜像)：顾名思义，将某个东西“照镜子”一样的照搬过来，供给下游应用；这种语境下，镜像指代的是对某些数据、流量或者状态进行无差别/有差别的转发，“镜像”操作关注于（转发源，转发目的地）两个概念。 正文 交换机中的“镜像”使用的是“mirror”词义，即对网络流量的有条件/无条件转发，供给下游监控、漏扫等应用进行使用。
+什么是交换机镜像 镜像是将指定“源（source）”的网络流量（这里指报文）完整的复制一份到“目的地（destination）”。目的地与监控、漏扫设备直接或者间接相连，在很多情况下，监控设备上都会安装相应的流量分析软件，对镜像转发的报文进行进一步的分析 当网络中出现存在攻击流量或者故障报文时，网管可以使用镜像功能无损的接入该网络，抓取报文进行分析排障等 根据镜像源的不同，交换机镜像往往可以分为如下几种： 端口镜像：将指定端口的流量转发到目标端口 流镜像：将流经网络设备的所有符合规则（Access Control List, ACL）的报文镜像转发的目标端口 VLAN镜像：将指定VLAN（Virtual Local Area Network）内所有活动网络接口的报文镜像转发到目标端口 MAC镜像：将指定VLAN内的从“源MAC地址”到“目标MAC地址”设备的报文进行镜像转发到目标端口 根据目的端口与监控设备的连接方式，可以分为如下两类： 本地镜像：源端口与目标端口在同一个设备上，与监控设备直接物理互连 远程镜像：源端口和目标端口不在同一个设备或部分在同一个设备上，与监控设备通过网络互联 Notes：镜像的目标都是一个“端口”，但源可能是网络设备、端口或者物理接口等多种不同的设备
+镜像的工作原理 交换机镜像的工作原理差不多，这里仅以最常见的端口镜像作为例子进行说明
+端口镜像是将网络设备上指定端口接收或发送的报文复制到目的端口，可以只复制端口接收或者发送的报文，也可以同时复制接收和发送的报文。指定端口称为镜像端口，目标端口称为观察端口。 本地镜像 如上图所示，DeviceA上的镜像端口（源）在接收或发送报文的时候，会将报文复制一份到观察端口（目标）。观察端口与监控设备直接相连，接收复制的原始报文进行进一步的分析处理等，因此本实例是一个典型的本地镜像 远程镜像 远程镜像通常有两种连接方式：
+目的端口通过二层网络与监控设备相连的场景称为二层远程镜像RSPAN（Remote Switched Port Analyzer） 目的端口通过三层网络与监控设备相连的场景称为三层远程镜像ERSPAN（Encapsulated Remote Switched Port Analyzer） 上图是一个典型的远程镜像实例，观察端口将复制的报文发送给监控设备前会添加一层VLAN Tag或进行GRE封装，便于复制的报文能够穿过中间的二层网络/三层网络，到达监控设备。
+总结 总的来讲，交换机镜像是为了方便网络管理员进行网络内探查、排障或者漏扫等等操作而提出的一种概念，本质上是对网络内的特定或非特定数据流量进行无条件或有条件的转发，以便下游的监控、漏扫或分析工具获取到原始数据流，并对其进行进一步的分析等。
+参考资料 华为设备百科-镜像">
+  <meta itemprop="datePublished" content="2023-04-25T08:37:18+00:00">
+  <meta itemprop="dateModified" content="2023-04-25T08:37:18+00:00">
+  <meta itemprop="wordCount" content="46">
+  <meta itemprop="keywords" content="Knowledge,Network"><meta property="og:url" content="/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/">
+  <meta property="og:site_name" content="Chaos">
+  <meta property="og:title" content="交换机中的“镜像”">
+  <meta property="og:description" content="写在开头 “镜像”这个词其实对应着计算机领域内两个（或许更多）截然不同的概念，这两个概念并没有谁更常用之类的区别，因此在使用时需要根据当时当刻的上下文信息进行不同的区分：
+Image(镜像)：这类一般出现在“系统镜像（iso文件）”、“容器镜像（docker）”这类语境下，其指代的是一个物理存在的数据文件，这个文件往往是某个运行环境的静态存储，即根据该镜像可以run起来一些需要被保留的状态现场等。 Mirror(镜像)：顾名思义，将某个东西“照镜子”一样的照搬过来，供给下游应用；这种语境下，镜像指代的是对某些数据、流量或者状态进行无差别/有差别的转发，“镜像”操作关注于（转发源，转发目的地）两个概念。 正文 交换机中的“镜像”使用的是“mirror”词义，即对网络流量的有条件/无条件转发，供给下游监控、漏扫等应用进行使用。
+什么是交换机镜像 镜像是将指定“源（source）”的网络流量（这里指报文）完整的复制一份到“目的地（destination）”。目的地与监控、漏扫设备直接或者间接相连，在很多情况下，监控设备上都会安装相应的流量分析软件，对镜像转发的报文进行进一步的分析 当网络中出现存在攻击流量或者故障报文时，网管可以使用镜像功能无损的接入该网络，抓取报文进行分析排障等 根据镜像源的不同，交换机镜像往往可以分为如下几种： 端口镜像：将指定端口的流量转发到目标端口 流镜像：将流经网络设备的所有符合规则（Access Control List, ACL）的报文镜像转发的目标端口 VLAN镜像：将指定VLAN（Virtual Local Area Network）内所有活动网络接口的报文镜像转发到目标端口 MAC镜像：将指定VLAN内的从“源MAC地址”到“目标MAC地址”设备的报文进行镜像转发到目标端口 根据目的端口与监控设备的连接方式，可以分为如下两类： 本地镜像：源端口与目标端口在同一个设备上，与监控设备直接物理互连 远程镜像：源端口和目标端口不在同一个设备或部分在同一个设备上，与监控设备通过网络互联 Notes：镜像的目标都是一个“端口”，但源可能是网络设备、端口或者物理接口等多种不同的设备
+镜像的工作原理 交换机镜像的工作原理差不多，这里仅以最常见的端口镜像作为例子进行说明
+端口镜像是将网络设备上指定端口接收或发送的报文复制到目的端口，可以只复制端口接收或者发送的报文，也可以同时复制接收和发送的报文。指定端口称为镜像端口，目标端口称为观察端口。 本地镜像 如上图所示，DeviceA上的镜像端口（源）在接收或发送报文的时候，会将报文复制一份到观察端口（目标）。观察端口与监控设备直接相连，接收复制的原始报文进行进一步的分析处理等，因此本实例是一个典型的本地镜像 远程镜像 远程镜像通常有两种连接方式：
+目的端口通过二层网络与监控设备相连的场景称为二层远程镜像RSPAN（Remote Switched Port Analyzer） 目的端口通过三层网络与监控设备相连的场景称为三层远程镜像ERSPAN（Encapsulated Remote Switched Port Analyzer） 上图是一个典型的远程镜像实例，观察端口将复制的报文发送给监控设备前会添加一层VLAN Tag或进行GRE封装，便于复制的报文能够穿过中间的二层网络/三层网络，到达监控设备。
+总结 总的来讲，交换机镜像是为了方便网络管理员进行网络内探查、排障或者漏扫等等操作而提出的一种概念，本质上是对网络内的特定或非特定数据流量进行无条件或有条件的转发，以便下游的监控、漏扫或分析工具获取到原始数据流，并对其进行进一步的分析等。
+参考资料 华为设备百科-镜像">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-04-25T08:37:18+00:00">
+    <meta property="article:modified_time" content="2023-04-25T08:37:18+00:00">
+    <meta property="article:tag" content="Knowledge">
+    <meta property="article:tag" content="Network">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="交换机中的“镜像”">
+  <meta name="twitter:description" content="写在开头 “镜像”这个词其实对应着计算机领域内两个（或许更多）截然不同的概念，这两个概念并没有谁更常用之类的区别，因此在使用时需要根据当时当刻的上下文信息进行不同的区分：
+Image(镜像)：这类一般出现在“系统镜像（iso文件）”、“容器镜像（docker）”这类语境下，其指代的是一个物理存在的数据文件，这个文件往往是某个运行环境的静态存储，即根据该镜像可以run起来一些需要被保留的状态现场等。 Mirror(镜像)：顾名思义，将某个东西“照镜子”一样的照搬过来，供给下游应用；这种语境下，镜像指代的是对某些数据、流量或者状态进行无差别/有差别的转发，“镜像”操作关注于（转发源，转发目的地）两个概念。 正文 交换机中的“镜像”使用的是“mirror”词义，即对网络流量的有条件/无条件转发，供给下游监控、漏扫等应用进行使用。
+什么是交换机镜像 镜像是将指定“源（source）”的网络流量（这里指报文）完整的复制一份到“目的地（destination）”。目的地与监控、漏扫设备直接或者间接相连，在很多情况下，监控设备上都会安装相应的流量分析软件，对镜像转发的报文进行进一步的分析 当网络中出现存在攻击流量或者故障报文时，网管可以使用镜像功能无损的接入该网络，抓取报文进行分析排障等 根据镜像源的不同，交换机镜像往往可以分为如下几种： 端口镜像：将指定端口的流量转发到目标端口 流镜像：将流经网络设备的所有符合规则（Access Control List, ACL）的报文镜像转发的目标端口 VLAN镜像：将指定VLAN（Virtual Local Area Network）内所有活动网络接口的报文镜像转发到目标端口 MAC镜像：将指定VLAN内的从“源MAC地址”到“目标MAC地址”设备的报文进行镜像转发到目标端口 根据目的端口与监控设备的连接方式，可以分为如下两类： 本地镜像：源端口与目标端口在同一个设备上，与监控设备直接物理互连 远程镜像：源端口和目标端口不在同一个设备或部分在同一个设备上，与监控设备通过网络互联 Notes：镜像的目标都是一个“端口”，但源可能是网络设备、端口或者物理接口等多种不同的设备
+镜像的工作原理 交换机镜像的工作原理差不多，这里仅以最常见的端口镜像作为例子进行说明
+端口镜像是将网络设备上指定端口接收或发送的报文复制到目的端口，可以只复制端口接收或者发送的报文，也可以同时复制接收和发送的报文。指定端口称为镜像端口，目标端口称为观察端口。 本地镜像 如上图所示，DeviceA上的镜像端口（源）在接收或发送报文的时候，会将报文复制一份到观察端口（目标）。观察端口与监控设备直接相连，接收复制的原始报文进行进一步的分析处理等，因此本实例是一个典型的本地镜像 远程镜像 远程镜像通常有两种连接方式：
+目的端口通过二层网络与监控设备相连的场景称为二层远程镜像RSPAN（Remote Switched Port Analyzer） 目的端口通过三层网络与监控设备相连的场景称为三层远程镜像ERSPAN（Encapsulated Remote Switched Port Analyzer） 上图是一个典型的远程镜像实例，观察端口将复制的报文发送给监控设备前会添加一层VLAN Tag或进行GRE封装，便于复制的报文能够穿过中间的二层网络/三层网络，到达监控设备。
+总结 总的来讲，交换机镜像是为了方便网络管理员进行网络内探查、排障或者漏扫等等操作而提出的一种概念，本质上是对网络内的特定或非特定数据流量进行无条件或有条件的转发，以便下游的监控、漏扫或分析工具获取到原始数据流，并对其进行进一步的分析等。
+参考资料 华为设备百科-镜像">
+
+  <link rel="canonical" href="/posts/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%B8%AD%E7%9A%84%E9%95%9C%E5%83%8F/" />
+</head>
+<body
+    class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
+  ><header
+  class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"
+>
+  <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
+    <a
+      class="-translate-y-[1px] text-2xl font-medium"
+      href="/"
+      >Chaos</a
+    >
+    <div
+      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? "rgb(0 0 0 / 85%)" : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"
+  ><nav
+      class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"
+    ><a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="posts/about"
+        >About</a
+      ></nav><nav
+      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+    >
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/map[creator:%20site:]"
+        target="_blank"
+        rel="me"
+      >twitter</a>
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/github.com/Chaotic-chaos"
+        target="_blank"
+        rel="me"
+      >github</a>
+    </nav>
+  </div>
+</header>
+<main
+      class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"
+    ><article>
+  <header class="mb-14">
+    <h1 class="my-0! pb-2.5">交换机中的“镜像”</h1><div class="text-xs antialiased opacity-60"><time>Apr 25, 2023</time></div></header>
+
+  <section><h2 id="写在开头">写在开头</h2>
+<blockquote>
+<p>“镜像”这个词其实对应着计算机领域内两个（或许更多）截然不同的概念，这两个概念并没有谁更常用之类的区别，因此在使用时需要根据当时当刻的上下文信息进行不同的区分：</p>
+</blockquote>
+<ul>
+<li>Image(镜像)：这类一般出现在“系统镜像（iso文件）”、“容器镜像（docker）”这类语境下，其指代的是一个物理存在的数据文件，这个文件往往是某个运行环境的静态存储，即根据该镜像可以run起来一些需要被保留的状态现场等。</li>
+<li>Mirror(镜像)：顾名思义，将某个东西“照镜子”一样的照搬过来，供给下游应用；这种语境下，镜像指代的是对某些数据、流量或者状态进行无差别/有差别的转发，“镜像”操作关注于（转发源，转发目的地）两个概念。</li>
+</ul>
+<h2 id="正文">正文</h2>
+<blockquote>
+<p>交换机中的“镜像”使用的是“mirror”词义，即对网络流量的有条件/无条件转发，供给下游监控、漏扫等应用进行使用。</p>
+</blockquote>
+<h3 id="什么是交换机镜像">什么是交换机镜像</h3>
+<ul>
+<li>镜像是将指定“源（source）”的网络流量（这里指报文）完整的复制一份到“目的地（destination）”。目的地与监控、漏扫设备直接或者间接相连，在很多情况下，监控设备上都会安装相应的流量分析软件，对镜像转发的报文进行进一步的分析</li>
+<li>当网络中出现存在攻击流量或者故障报文时，网管可以使用镜像功能无损的接入该网络，抓取报文进行分析排障等</li>
+<li>根据镜像源的不同，交换机镜像往往可以分为如下几种：
+<ul>
+<li><strong>端口镜像</strong>：将指定端口的流量转发到目标端口</li>
+<li><strong>流镜像</strong>：将流经网络设备的所有符合规则（Access Control List, ACL）的报文镜像转发的目标端口</li>
+<li><strong>VLAN镜像</strong>：将指定VLAN（Virtual Local Area Network）内所有活动网络接口的报文镜像转发到目标端口</li>
+<li><strong>MAC镜像</strong>：将指定VLAN内的从“源MAC地址”到“目标MAC地址”设备的报文进行镜像转发到目标端口</li>
+</ul>
+</li>
+<li>根据目的端口与监控设备的连接方式，可以分为如下两类：
+<ul>
+<li>本地镜像：源端口与目标端口在同一个设备上，与监控设备直接物理互连</li>
+<li>远程镜像：源端口和目标端口不在同一个设备或部分在同一个设备上，与监控设备通过网络互联</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Notes：镜像的目标都是一个“端口”，但源可能是网络设备、端口或者物理接口等多种不同的设备</p>
+</blockquote>
+<h3 id="镜像的工作原理">镜像的工作原理</h3>
+<blockquote>
+<p>交换机镜像的工作原理差不多，这里仅以最常见的<strong>端口镜像</strong>作为例子进行说明</p>
+</blockquote>
+<ul>
+<li>端口镜像是将网络设备上指定端口接收或发送的报文复制到目的端口，可以只复制端口接收或者发送的报文，也可以同时复制接收和发送的报文。指定端口称为镜像端口，目标端口称为观察端口。</li>
+</ul>
+<h4 id="本地镜像">本地镜像</h4>
+<p><img src="https://pic2.imgdb.cn/item/6447984c0d2dde5777f57d83.png" alt="端口镜像实例"></p>
+<ul>
+<li>如上图所示，DeviceA上的镜像端口（源）在接收或发送报文的时候，会将报文复制一份到观察端口（目标）。观察端口与监控设备直接相连，接收复制的原始报文进行进一步的分析处理等，因此本实例是一个典型的本地镜像</li>
+</ul>
+<h4 id="远程镜像">远程镜像</h4>
+<p><img src="https://pic2.imgdb.cn/item/644799010d2dde5777f6317e.png" alt="远程镜像实例"></p>
+<ul>
+<li>
+<p>远程镜像通常有两种连接方式：</p>
+<ul>
+<li>目的端口通过二层网络与监控设备相连的场景称为二层远程镜像RSPAN（Remote Switched Port Analyzer）</li>
+</ul>
+<ul>
+<li>目的端口通过三层网络与监控设备相连的场景称为三层远程镜像ERSPAN（Encapsulated Remote Switched Port Analyzer）</li>
+</ul>
+</li>
+<li>
+<p>上图是一个典型的远程镜像实例，观察端口将复制的报文发送给监控设备前会添加一层VLAN Tag或进行GRE封装，便于复制的报文能够穿过中间的二层网络/三层网络，到达监控设备。</p>
+</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>总的来讲，交换机镜像是为了方便网络管理员进行网络内探查、排障或者漏扫等等操作而提出的一种概念，本质上是对网络内的特定或非特定数据流量进行无条件或有条件的转发，以便下游的监控、漏扫或分析工具获取到原始数据流，并对其进行进一步的分析等。</p>
+<hr>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li><a href="https://info.support.huawei.com/info-finder/encyclopedia/zh/%E9%95%9C%E5%83%8F.html">华为设备百科-镜像</a></li>
+</ul>
+</section>
+
+  <footer class="mt-12 flex flex-wrap"><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/knowledge"
+      >Knowledge</a
+    ><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/network"
+      >Network</a
+    ></footer><nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/2023-08-28-vscode_python_language_server%E5%8D%A1%E9%A1%BF/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>VsCode中，Python插件的Python Language Server造成的卡顿问题</span></a
+    ><a
+      class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
+      href="/posts/23/"
+      ><span>aoimysql配合mysql使用时的query缓存坑</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    ></nav></article></main><footer
+  class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
+>
+  <div class="mr-auto">&copy;2026
+    <a class="link" href="/">Chaos</a></div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+</body>
+</html>

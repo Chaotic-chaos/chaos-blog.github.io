@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debug, 测试 on Chaos</title>
+    <link>/categories/debug-%E6%B5%8B%E8%AF%95/</link>
+    <description>Recent content in Debug, 测试 on Chaos</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 03 Feb 2026 17:51:30 +0000</lastBuildDate>
+    <atom:link href="/categories/debug-%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>测试新的博客书写工具</title>
+      <link>/posts/%E6%B5%8B%E8%AF%95%E6%96%B0%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%B9%A6%E5%86%99%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Tue, 03 Feb 2026 17:51:30 +0000</pubDate>
+      <guid>/posts/%E6%B5%8B%E8%AF%95%E6%96%B0%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%B9%A6%E5%86%99%E5%B7%A5%E5%85%B7/</guid>
+      <description>&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;时隔三年，不小心在整理git仓库的时候发现了这份源码；&lt;/li&gt;&#xA;&lt;li&gt;原来当时搭建的Blog依旧在稳定的运行，躺在众多互联网内容的一个小小角落；（说不定也曾经被训进某个 LLM 🙈）&lt;/li&gt;&#xA;&lt;li&gt;恰逢今天在V2EX 上刷到这个新的静态博客书写工具，解决了当时最阻挡写博客脚步的刚需：Meta 信息的编辑和 git 仓库的操作导致的写作前后处理流程过长；&lt;/li&gt;&#xA;&lt;li&gt;惊叹、反思，在有了痛点的时候最好多想一步，看能否把痛点转化成需求，再通过现在如此方便的 Coding 方式来实现需求，解决痛点！&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+  </channel>
+</rss>

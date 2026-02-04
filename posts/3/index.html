@@ -1,0 +1,407 @@
+<!doctype html>
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg:#faf8f1"
+  lang="en-us"
+  dir="ltr"
+><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>windows下使用wsl2初体验 - Chaos</title>
+
+  
+  <meta name="theme-color" />
+
+  <meta name="description" content="背景
+
+尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试
+
+几点说明
+
+本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网
+本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录
+
+概念
+
+wsl全名windows subsystem for linux
+
+开始安装
+安装WSL2功能模块
+
+该步骤下所有命令执行都在windows powershell(管理员模式)下
+
+
+打开wsl功能模块
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+安装必要功能
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+重启电脑，完成安装（重要，我被卡在这里很久）
+
+设置内核安装默认为wsl2
+
+powershell（管理员）执行wsl --set-default-version 2
+这里正常的话是可以正常执行的，如果提示类似于需要升级wsl内核之类的信息的话，就需要手动更新一下wsl内核：
+
+下载地址
+下载完成双击打开一路下一步即可，无其他可选项
+
+
+
+安装linux子系统
+
+打开windows应用商店，搜索关键字linux
+下载安装想要使用的linux发行版，等待安装完成
+开始菜单启动一次刚刚安装的发行版，耐心等待安装完成
+
+配置
+
+以下配置以本人安装的Debain为例，步骤差不多，有一些命令可能会不一样
+
+换源
+
+用预设源进行apt-get update，切记不能先换源，否则会出现错误
+安装必要软件apt-get install ca-certificates
+备份原源列表cp /etc/apt/sources.list /etc/apt/sources.list.backup
+编辑源列表nano /etc/apt/sources.list
+将源列表内容替换为下列内容
+
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+#deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+
+更新源列表apt-get update
+
+代理上网
+
+wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+
+  
+  <link rel="preload" as="image" href="/theme.png" />
+
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
+
+  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+
+  <script
+    defer
+    src="/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad()"
+  ></script>
+
+  
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/apple-touch-icon.png"
+  />
+
+  <meta name="generator" content="Hugo 0.155.2">
+  <meta itemprop="name" content="windows下使用wsl2初体验">
+  <meta itemprop="description" content="背景 尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试 几点说明 本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网 本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录 概念 wsl全名windows subsystem for linux 开始安装 安装WSL2功能模块 该步骤下所有命令执行都在windows powershell(管理员模式)下
+打开wsl功能模块 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart 安装必要功能 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart 重启电脑，完成安装（重要，我被卡在这里很久） 设置内核安装默认为wsl2 powershell（管理员）执行wsl --set-default-version 2 这里正常的话是可以正常执行的，如果提示类似于需要升级wsl内核之类的信息的话，就需要手动更新一下wsl内核： 下载地址 下载完成双击打开一路下一步即可，无其他可选项 安装linux子系统 打开windows应用商店，搜索关键字linux 下载安装想要使用的linux发行版，等待安装完成 开始菜单启动一次刚刚安装的发行版，耐心等待安装完成 配置 以下配置以本人安装的Debain为例，步骤差不多，有一些命令可能会不一样
+换源 用预设源进行apt-get update，切记不能先换源，否则会出现错误 安装必要软件apt-get install ca-certificates 备份原源列表cp /etc/apt/sources.list /etc/apt/sources.list.backup 编辑源列表nano /etc/apt/sources.list 将源列表内容替换为下列内容 deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free #deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free 更新源列表apt-get update 代理上网 wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2">
+  <meta itemprop="datePublished" content="2021-03-09T14:50:00+00:00">
+  <meta itemprop="dateModified" content="2021-03-09T14:50:00+00:00">
+  <meta itemprop="wordCount" content="182">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/3/">
+  <meta property="og:site_name" content="Chaos">
+  <meta property="og:title" content="windows下使用wsl2初体验">
+  <meta property="og:description" content="背景 尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试 几点说明 本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网 本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录 概念 wsl全名windows subsystem for linux 开始安装 安装WSL2功能模块 该步骤下所有命令执行都在windows powershell(管理员模式)下
+打开wsl功能模块 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart 安装必要功能 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart 重启电脑，完成安装（重要，我被卡在这里很久） 设置内核安装默认为wsl2 powershell（管理员）执行wsl --set-default-version 2 这里正常的话是可以正常执行的，如果提示类似于需要升级wsl内核之类的信息的话，就需要手动更新一下wsl内核： 下载地址 下载完成双击打开一路下一步即可，无其他可选项 安装linux子系统 打开windows应用商店，搜索关键字linux 下载安装想要使用的linux发行版，等待安装完成 开始菜单启动一次刚刚安装的发行版，耐心等待安装完成 配置 以下配置以本人安装的Debain为例，步骤差不多，有一些命令可能会不一样
+换源 用预设源进行apt-get update，切记不能先换源，否则会出现错误 安装必要软件apt-get install ca-certificates 备份原源列表cp /etc/apt/sources.list /etc/apt/sources.list.backup 编辑源列表nano /etc/apt/sources.list 将源列表内容替换为下列内容 deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free #deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free 更新源列表apt-get update 代理上网 wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-03-09T14:50:00+00:00">
+    <meta property="article:modified_time" content="2021-03-09T14:50:00+00:00">
+    <meta property="article:tag" content="System">
+    <meta property="article:tag" content="日常使用">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="windows下使用wsl2初体验">
+  <meta name="twitter:description" content="背景 尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试 几点说明 本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网 本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录 概念 wsl全名windows subsystem for linux 开始安装 安装WSL2功能模块 该步骤下所有命令执行都在windows powershell(管理员模式)下
+打开wsl功能模块 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart 安装必要功能 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart 重启电脑，完成安装（重要，我被卡在这里很久） 设置内核安装默认为wsl2 powershell（管理员）执行wsl --set-default-version 2 这里正常的话是可以正常执行的，如果提示类似于需要升级wsl内核之类的信息的话，就需要手动更新一下wsl内核： 下载地址 下载完成双击打开一路下一步即可，无其他可选项 安装linux子系统 打开windows应用商店，搜索关键字linux 下载安装想要使用的linux发行版，等待安装完成 开始菜单启动一次刚刚安装的发行版，耐心等待安装完成 配置 以下配置以本人安装的Debain为例，步骤差不多，有一些命令可能会不一样
+换源 用预设源进行apt-get update，切记不能先换源，否则会出现错误 安装必要软件apt-get install ca-certificates 备份原源列表cp /etc/apt/sources.list /etc/apt/sources.list.backup 编辑源列表nano /etc/apt/sources.list 将源列表内容替换为下列内容 deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free #deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free # deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free 更新源列表apt-get update 代理上网 wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令cat /etc/resolv.conf | grep nameserver | awk &#39;{ print $2 }&#39;进行查看，为了后文叙述方便，这里假设输出结果192.168.1.2">
+
+  <link rel="canonical" href="/posts/3/" />
+</head>
+<body
+    class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
+  ><header
+  class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"
+>
+  <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
+    <a
+      class="-translate-y-[1px] text-2xl font-medium"
+      href="/"
+      >Chaos</a
+    >
+    <div
+      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? "rgb(0 0 0 / 85%)" : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"
+  ><nav
+      class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"
+    ><a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="posts/about"
+        >About</a
+      ></nav><nav
+      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+    >
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/map[creator:%20site:]"
+        target="_blank"
+        rel="me"
+      >twitter</a>
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/github.com/Chaotic-chaos"
+        target="_blank"
+        rel="me"
+      >github</a>
+    </nav>
+  </div>
+</header>
+<main
+      class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"
+    ><article>
+  <header class="mb-14">
+    <h1 class="my-0! pb-2.5">windows下使用wsl2初体验</h1><div class="text-xs antialiased opacity-60"><time>Mar 9, 2021</time><span class="mx-1">&middot;</span>
+      <span>chaos</span></div></header>
+
+  <section><h2 id="背景">背景</h2>
+<ul>
+<li>尝试全面转向win作为主力开发系统，但是很多东西需要在linux下执行，wsl经历了一次技术路线的全面更新在网络上的反响也还是不错的。随机决定进行一下尝试</li>
+</ul>
+<h2 id="几点说明">几点说明</h2>
+<ul>
+<li>本篇文章仅仅是小白从零开始进行wsl2配置，没有过wsl1的使用经验，里边的步骤也大多都是来自于万能的互联网</li>
+<li>本篇文章不涉及深度使用的感受，后续体验之后有时间的话会再进行记录</li>
+</ul>
+<h2 id="概念">概念</h2>
+<ul>
+<li>wsl全名windows subsystem for linux</li>
+</ul>
+<h2 id="开始安装">开始安装</h2>
+<h3 id="安装wsl2功能模块">安装WSL2功能模块</h3>
+<blockquote>
+<p><!-- raw HTML omitted -->该步骤下所有命令执行都在windows powershell(管理员模式)下<!-- raw HTML omitted --></p>
+</blockquote>
+<ul>
+<li>打开wsl功能模块
+<code>dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart</code></li>
+<li>安装必要功能
+<code>dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart</code></li>
+<li>重启电脑，完成安装（<strong>重要，我被卡在这里很久</strong>）</li>
+</ul>
+<h3 id="设置内核安装默认为wsl2">设置内核安装默认为wsl2</h3>
+<ul>
+<li>powershell（管理员）执行<code>wsl --set-default-version 2</code></li>
+<li>这里正常的话是可以正常执行的，如果提示类似于<!-- raw HTML omitted -->需要升级wsl内核<!-- raw HTML omitted -->之类的信息的话，就需要手动更新一下wsl内核：
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10#step-4---download-the-linux-kernel-update-package">下载地址</a></li>
+<li>下载完成双击打开一路下一步即可，无其他可选项</li>
+</ul>
+</li>
+</ul>
+<h3 id="安装linux子系统">安装linux子系统</h3>
+<ul>
+<li>打开windows应用商店，搜索关键字<code>linux</code></li>
+<li>下载安装想要使用的linux发行版，等待安装完成</li>
+<li>开始菜单启动一次刚刚安装的发行版，耐心等待安装完成</li>
+</ul>
+<h2 id="配置">配置</h2>
+<blockquote>
+<p>以下配置以本人安装的<code>Debain</code>为例，步骤差不多，有一些命令可能会不一样</p>
+</blockquote>
+<h3 id="换源">换源</h3>
+<ul>
+<li>用预设源进行<code>apt-get update</code>，<!-- raw HTML omitted -->切记不能先换源，否则会出现错误<!-- raw HTML omitted --></li>
+<li>安装必要软件<code>apt-get install ca-certificates</code></li>
+<li>备份原源列表<code>cp /etc/apt/sources.list /etc/apt/sources.list.backup</code></li>
+<li>编辑源列表<code>nano /etc/apt/sources.list</code></li>
+<li>将源列表内容替换为下列内容</li>
+</ul>
+<pre tabindex="0"><code>deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+#deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+deb [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+# deb-src [trusted=yes] https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+</code></pre><ul>
+<li>更新源列表<code>apt-get update</code></li>
+</ul>
+<h3 id="代理上网">代理上网</h3>
+<blockquote>
+<p>wsl2采用了虚拟化技术，对于宿主机来说wsl是一个单独的虚拟网卡，等同于一张“公共网卡”，所以对于wsl2来讲，win宿主机的ip地址是网卡内部的ip，需要通过命令<code>cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }'</code>进行查看，为了后文叙述方便，这里<strong>假设</strong>输出结果<code>192.168.1.2</code></p>
+</blockquote>
+<h4 id="方案一临时性全局科学仅对当前shell窗口生效">方案一：临时性全局科学，仅对当前shell窗口生效</h4>
+<ul>
+<li>shell窗口直接执行<code>export ALL_PROXY=protocol://192.168.1.2:port</code></li>
+</ul>
+<h4 id="方案二软件解决每次需要科学的命令需要加上命令前缀">方案二：软件解决，每次需要科学的命令需要加上命令前缀</h4>
+<ul>
+<li>安装<code>apt-get install proxychains</code></li>
+<li>配置<code>nano /etc/proxychains.conf</code></li>
+<li>在文件末尾根据示例添加科学地址</li>
+</ul>
+<h3 id="美化shell窗口">美化shell窗口</h3>
+<ul>
+<li>安装zsh: <code>apt-get install zsh</code></li>
+<li>安装oh-my-zsh: <code>sh -c &quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;</code></li>
+<li>配置oh-my-zsh:
+<ul>
+<li><a href="https://github.com/Microsoft/console/releases">下载</a>最新版本对shell窗口进行优化</li>
+<li><a href="https://raw.githubusercontent.com/tonsky/FiraCode/master/distr/ttf/FiraCode-Retina.ttf">下载</a>字体并安装</li>
+<li>安装<code>zsh</code>神级插件：</li>
+</ul>
+<pre tabindex="0"><code>  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+</code></pre><ul>
+<li>编辑<code>nano ~/.zshrc</code>
+<ul>
+<li>找到<code>ZSH_THEME</code>修改为<code>agnoster</code></li>
+<li>找到<code>plugins</code>并在后边添加想启用的插件，以空格为分隔符<code>git zsh-syntax-highlighting zsh-autosuggestions</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="python环境">Python环境</h3>
+<ul>
+<li>为了后期方便，这里采用conda对python环境进行统一管理</li>
+<li>由于wsl完全占用C盘空间，所以尽量选择最小安装，节省空间。Anaconda官方预算3G空间，Miniconda完全安装完大概1G左右，故选择miniconda进行安装</li>
+<li>步骤
+<ul>
+<li>定位到用户目录<code>cd ~</code></li>
+<li><a href="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh">下载</a>Miniconda(python3.8)安装脚本</li>
+<li>执行脚本，并根据脚本提示进行安装<code>bash Miniconda3-latest-Linux-x86_64.sh</code></li>
+<li>安装完成，关闭当前shell窗口并重新开启</li>
+<li>执行<code>python -V</code>验证安装结果</li>
+</ul>
+</li>
+</ul>
+<h2 id="写在最后">写在最后</h2>
+<ul>
+<li>zsh的其他美化以及插件功能还有很多，读者可以自行进行调研使用</li>
+<li>至此wsl2内核的debian系统已经达到能用的状态</li>
+<li>在这之前作者也是一个坚定的win/linux双系统使用者，只是近来由于一些原因必须要迁移到win平台，才发现其实在微软这么多年的深耕之下，全球有太多的软件公司都为win做了太多的优化，无论从美观程度、易用程度、更新速度方面都远超linux平台下的软件。而现在win也在深耕wsl，更是给了win一个很大的机会，“在不重启的情况下使用两个系统”，听起来就很不错。在搜索资料的过程中偶然瞥到wsl2现在已经支持了GPU，这对深度学习工作者来讲更是一个天大的好消息，同时也发现wsl对于ntfs的io慢到令人发指，作者目前还没有感受到，只能是进行深度体验后再说。无论如何，系统融合对于开发者来讲都是一个天大的好事。</li>
+</ul>
+</section>
+
+  <footer class="mt-12 flex flex-wrap"><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/system"
+      >System</a
+    ><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      >日常使用</a
+    ></footer><nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/4/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用Docker将python应用打包为images</span></a
+    ><a
+      class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
+      href="/posts/2/"
+      ><span>关于python协程销毁、超时</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    ></nav></article></main><footer
+  class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
+>
+  <div class="mr-auto">&copy;2026
+    <a class="link" href="/">Chaos</a></div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!doctype html>
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg:#faf8f1"
+  lang="en-us"
+  dir="ltr"
+><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>使用zerotier-one搭配anyproxy保障多种方式回内网 - Chaos</title>
+
+  
+  <meta name="theme-color" />
+
+  <meta name="description" content="背景
+
+之前写过怎么在win平台使用frp搭配zerotierone搭建回校内网，详见这里
+但是pc经常会出现关机等等意外情况，同时frp一定需要一台公网服务器，受限于国内带宽的高价，有时候该种解决方案并不是最优
+本次介绍一种使用zerotier-one的官方服务进行内网组建同时搭配anyproxy的vpn方法
+刚好趁此机会介绍一下在linux下的anyproxy的安装配置
+
+产品简介
+anyproxy
+
+跨平台基于nodejs的快速http代理工具，不多介绍
+
+zerotier-one
+
+一款全平台的vpn子网组件工具
+该工具会自动在转发、直通、p2p等方式中选择最优方案进行子网组建
+官方提供转发服务器，虽然是在境外（速度相对较慢）但是聊胜于无，免费账号可以同时加入100台机器（甚至对于一个小团队都是够用的），不限制子网数量
+
+动手吧！
+安装anyproxy
+
+首先确保有npm工具：
+
+npm -v
+
+直接进行一个安装
+
+sudo npm install anyproxy -g
+
+启动测试
+
+anyproxy --port &lt;proxy port u wanna use&gt;
+
+配置开机启动
+
+
+
+防止机器断电，还是配置一下开机自启比较好
+为了方便（其实是我只会这一种），这里使用systemd的方式配置开机自启
+具体systemd是什么请自行google，这里只需要知道该守护程序有两个可以放置配置文件的地方：/etc/systemd/system/或者/usr/lib/systemd/system/
+
+
+
+创建服务文件
+
+sudo touch /usr/lib/systemd/system/anyproxy.service
+
+编写服务文件(复制记得删除注释)
+
+[Unit]
+Description=Initiate the anyproxy server # 给出一个详细描述
+After=network-online.target # 固定
+[Service]
+Type=simple # 固定
+ExecStart=/bin/bash &lt;abspath_to_init.sh&gt; # 需要将anyproxy的启动写成一个sh脚本，并放在任意位置，chmod给执行权限
+Restart=on-abort # 固定
+User=root # 固定
+[Install] # 固定
+WantedBy=default.target # 固定
+
+重载
+
+sudo systemctl daemon-reload
+
+启动
+
+sudo systemctl start anyproxy
+
+查看运行状态
+
+sudo systemclt status anyproxy
+
+设置开机自启
+
+sudo systemctl enable anyproxy
+安装配置zerotier-one
+下载
+
+这里下载并安装
+
+注册并创建一个子网
+
+这里使用你喜欢的方式注册登录zerotier
+点击Create A Network，稍等片刻点击进入创建好的子网
+起一个喜欢的名字，其他保持默认即可
+记下来最上边的Network ID，这个后边会用
+
+加入网络
+Linux
+
+执行下列命令加入刚刚创建的子网
+
+sudo zerotier-cli join &lt;Network ID&gt;
+
+稍等片刻，回到网页后台会发现在Members区域出现了刚刚加入的机器，但是zerotier默认新加入的机器没有任何ip分配权限，需要点击最前边Auth?对应的小框框，打上勾勾，稍等片刻便发现刚刚的机器被分配了一个自己的ip地址
+
+你可以给机器起一个方便记忆的名字，此时所有加入了这个子网的机器都可以使用子网内的ip进行互相通信，我们不需要关心其背后的实现逻辑到底是直通还是官方中转
+
+Windows
+
+安装完成后会自动启动并最小化到托盘
+点击右键并打开控制面板
+
+键入Network ID并点击加入
+
+回到网页后台重复上述授权
+恭喜你，此时你手上的机器与刚才启动anyproxy的机器已经在同一个内网了，你可以使用服务器在内网中的ip地址加上刚刚设置的anyproxy端口进行代理访问了；当然你也可以直接使用内网ip对服务器进行ssh连接，将该机器作为跳板机连接任何与该机器同网内的设备
+zerotier-one在安装时如果使用的是官方的安装脚本的话其默认是开机自启的，不需要我们再重新配置
+
+后记
+
+这里介绍了新的两种内网组建方式
+其实这几种方式排列组合能够产生很多好玩的用法，子网的方式能够更安全的对外暴露ssh等敏感服务，理论上讲只有zerotier官方能够看到服务器的真实ip（该ip还不是机器的，是机器所在最高网关的），此时能够完全放心的ssh连接，否则的话使用公网ip暴露ssh端口会有很多很多陌生人跨越山和大海来扫你&hellip;
+本人水平有限，仍在努力学习，难免存在行文不畅、过于简单、存在错误等等问题，希望大家多多指正！
+" />
+  <meta name="author" content="chaos" /><link rel="preload stylesheet" as="style" href="/main.min.e86ae67e01e2d2055106abf72be7357c950191060e5f159f24e2790fd8237e8c.css" integrity="sha256-6GrmfgHi0gVRBqv3K&#43;c1fJUBkQYOXxWfJOJ5D9gjfow=" />
+
+  
+  <link rel="preload" as="image" href="/theme.png" />
+
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/32286124?s=400&amp;u=033f55fccdac72050c746d4844bed08b12d4403e&amp;v=4" />
+
+  <link rel="preload" as="image" href="/twitter.svg" /><link rel="preload" as="image" href="/github.svg" />
+
+  <script
+    defer
+    src="/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad()"
+  ></script>
+
+  
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/apple-touch-icon.png"
+  />
+
+  <meta name="generator" content="Hugo 0.155.2">
+  <meta itemprop="name" content="使用zerotier-one搭配anyproxy保障多种方式回内网">
+  <meta itemprop="description" content="背景 之前写过怎么在win平台使用frp搭配zerotierone搭建回校内网，详见这里 但是pc经常会出现关机等等意外情况，同时frp一定需要一台公网服务器，受限于国内带宽的高价，有时候该种解决方案并不是最优 本次介绍一种使用zerotier-one的官方服务进行内网组建同时搭配anyproxy的vpn方法 刚好趁此机会介绍一下在linux下的anyproxy的安装配置 产品简介 anyproxy 跨平台基于nodejs的快速http代理工具，不多介绍 zerotier-one 一款全平台的vpn子网组件工具 该工具会自动在转发、直通、p2p等方式中选择最优方案进行子网组建 官方提供转发服务器，虽然是在境外（速度相对较慢）但是聊胜于无，免费账号可以同时加入100台机器（甚至对于一个小团队都是够用的），不限制子网数量 动手吧！ 安装anyproxy 首先确保有npm工具： npm -v 直接进行一个安装 sudo npm install anyproxy -g 启动测试 anyproxy --port &lt;proxy port u wanna use&gt; 配置开机启动 防止机器断电，还是配置一下开机自启比较好 为了方便（其实是我只会这一种），这里使用systemd的方式配置开机自启 具体systemd是什么请自行google，这里只需要知道该守护程序有两个可以放置配置文件的地方：/etc/systemd/system/或者/usr/lib/systemd/system/ 创建服务文件 sudo touch /usr/lib/systemd/system/anyproxy.service 编写服务文件(复制记得删除注释) [Unit] Description=Initiate the anyproxy server # 给出一个详细描述 After=network-online.target # 固定 [Service] Type=simple # 固定 ExecStart=/bin/bash &lt;abspath_to_init.sh&gt; # 需要将anyproxy的启动写成一个sh脚本，并放在任意位置，chmod给执行权限 Restart=on-abort # 固定 User=root # 固定 [Install] # 固定 WantedBy=default.target # 固定 重载 sudo systemctl daemon-reload 启动 sudo systemctl start anyproxy 查看运行状态 sudo systemclt status anyproxy 设置开机自启 sudo systemctl enable anyproxy 安装配置zerotier-one 下载 这里下载并安装 注册并创建一个子网 这里使用你喜欢的方式注册登录zerotier 点击Create A Network，稍等片刻点击进入创建好的子网 起一个喜欢的名字，其他保持默认即可 记下来最上边的Network ID，这个后边会用 加入网络 Linux 执行下列命令加入刚刚创建的子网 sudo zerotier-cli join &lt;Network ID&gt; 稍等片刻，回到网页后台会发现在Members区域出现了刚刚加入的机器，但是zerotier默认新加入的机器没有任何ip分配权限，需要点击最前边Auth?对应的小框框，打上勾勾，稍等片刻便发现刚刚的机器被分配了一个自己的ip地址 你可以给机器起一个方便记忆的名字，此时所有加入了这个子网的机器都可以使用子网内的ip进行互相通信，我们不需要关心其背后的实现逻辑到底是直通还是官方中转 Windows 安装完成后会自动启动并最小化到托盘 点击右键并打开控制面板 键入Network ID并点击加入 回到网页后台重复上述授权 恭喜你，此时你手上的机器与刚才启动anyproxy的机器已经在同一个内网了，你可以使用服务器在内网中的ip地址加上刚刚设置的anyproxy端口进行代理访问了；当然你也可以直接使用内网ip对服务器进行ssh连接，将该机器作为跳板机连接任何与该机器同网内的设备 zerotier-one在安装时如果使用的是官方的安装脚本的话其默认是开机自启的，不需要我们再重新配置 后记 这里介绍了新的两种内网组建方式 其实这几种方式排列组合能够产生很多好玩的用法，子网的方式能够更安全的对外暴露ssh等敏感服务，理论上讲只有zerotier官方能够看到服务器的真实ip（该ip还不是机器的，是机器所在最高网关的），此时能够完全放心的ssh连接，否则的话使用公网ip暴露ssh端口会有很多很多陌生人跨越山和大海来扫你… 本人水平有限，仍在努力学习，难免存在行文不畅、过于简单、存在错误等等问题，希望大家多多指正！">
+  <meta itemprop="datePublished" content="2021-12-30T22:55:00+00:00">
+  <meta itemprop="dateModified" content="2021-12-30T22:55:00+00:00">
+  <meta itemprop="wordCount" content="122">
+  <meta itemprop="keywords" content="System,日常使用"><meta property="og:url" content="/posts/15/">
+  <meta property="og:site_name" content="Chaos">
+  <meta property="og:title" content="使用zerotier-one搭配anyproxy保障多种方式回内网">
+  <meta property="og:description" content="背景 之前写过怎么在win平台使用frp搭配zerotierone搭建回校内网，详见这里 但是pc经常会出现关机等等意外情况，同时frp一定需要一台公网服务器，受限于国内带宽的高价，有时候该种解决方案并不是最优 本次介绍一种使用zerotier-one的官方服务进行内网组建同时搭配anyproxy的vpn方法 刚好趁此机会介绍一下在linux下的anyproxy的安装配置 产品简介 anyproxy 跨平台基于nodejs的快速http代理工具，不多介绍 zerotier-one 一款全平台的vpn子网组件工具 该工具会自动在转发、直通、p2p等方式中选择最优方案进行子网组建 官方提供转发服务器，虽然是在境外（速度相对较慢）但是聊胜于无，免费账号可以同时加入100台机器（甚至对于一个小团队都是够用的），不限制子网数量 动手吧！ 安装anyproxy 首先确保有npm工具： npm -v 直接进行一个安装 sudo npm install anyproxy -g 启动测试 anyproxy --port &lt;proxy port u wanna use&gt; 配置开机启动 防止机器断电，还是配置一下开机自启比较好 为了方便（其实是我只会这一种），这里使用systemd的方式配置开机自启 具体systemd是什么请自行google，这里只需要知道该守护程序有两个可以放置配置文件的地方：/etc/systemd/system/或者/usr/lib/systemd/system/ 创建服务文件 sudo touch /usr/lib/systemd/system/anyproxy.service 编写服务文件(复制记得删除注释) [Unit] Description=Initiate the anyproxy server # 给出一个详细描述 After=network-online.target # 固定 [Service] Type=simple # 固定 ExecStart=/bin/bash &lt;abspath_to_init.sh&gt; # 需要将anyproxy的启动写成一个sh脚本，并放在任意位置，chmod给执行权限 Restart=on-abort # 固定 User=root # 固定 [Install] # 固定 WantedBy=default.target # 固定 重载 sudo systemctl daemon-reload 启动 sudo systemctl start anyproxy 查看运行状态 sudo systemclt status anyproxy 设置开机自启 sudo systemctl enable anyproxy 安装配置zerotier-one 下载 这里下载并安装 注册并创建一个子网 这里使用你喜欢的方式注册登录zerotier 点击Create A Network，稍等片刻点击进入创建好的子网 起一个喜欢的名字，其他保持默认即可 记下来最上边的Network ID，这个后边会用 加入网络 Linux 执行下列命令加入刚刚创建的子网 sudo zerotier-cli join &lt;Network ID&gt; 稍等片刻，回到网页后台会发现在Members区域出现了刚刚加入的机器，但是zerotier默认新加入的机器没有任何ip分配权限，需要点击最前边Auth?对应的小框框，打上勾勾，稍等片刻便发现刚刚的机器被分配了一个自己的ip地址 你可以给机器起一个方便记忆的名字，此时所有加入了这个子网的机器都可以使用子网内的ip进行互相通信，我们不需要关心其背后的实现逻辑到底是直通还是官方中转 Windows 安装完成后会自动启动并最小化到托盘 点击右键并打开控制面板 键入Network ID并点击加入 回到网页后台重复上述授权 恭喜你，此时你手上的机器与刚才启动anyproxy的机器已经在同一个内网了，你可以使用服务器在内网中的ip地址加上刚刚设置的anyproxy端口进行代理访问了；当然你也可以直接使用内网ip对服务器进行ssh连接，将该机器作为跳板机连接任何与该机器同网内的设备 zerotier-one在安装时如果使用的是官方的安装脚本的话其默认是开机自启的，不需要我们再重新配置 后记 这里介绍了新的两种内网组建方式 其实这几种方式排列组合能够产生很多好玩的用法，子网的方式能够更安全的对外暴露ssh等敏感服务，理论上讲只有zerotier官方能够看到服务器的真实ip（该ip还不是机器的，是机器所在最高网关的），此时能够完全放心的ssh连接，否则的话使用公网ip暴露ssh端口会有很多很多陌生人跨越山和大海来扫你… 本人水平有限，仍在努力学习，难免存在行文不畅、过于简单、存在错误等等问题，希望大家多多指正！">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-12-30T22:55:00+00:00">
+    <meta property="article:modified_time" content="2021-12-30T22:55:00+00:00">
+    <meta property="article:tag" content="System">
+    <meta property="article:tag" content="日常使用">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="使用zerotier-one搭配anyproxy保障多种方式回内网">
+  <meta name="twitter:description" content="背景 之前写过怎么在win平台使用frp搭配zerotierone搭建回校内网，详见这里 但是pc经常会出现关机等等意外情况，同时frp一定需要一台公网服务器，受限于国内带宽的高价，有时候该种解决方案并不是最优 本次介绍一种使用zerotier-one的官方服务进行内网组建同时搭配anyproxy的vpn方法 刚好趁此机会介绍一下在linux下的anyproxy的安装配置 产品简介 anyproxy 跨平台基于nodejs的快速http代理工具，不多介绍 zerotier-one 一款全平台的vpn子网组件工具 该工具会自动在转发、直通、p2p等方式中选择最优方案进行子网组建 官方提供转发服务器，虽然是在境外（速度相对较慢）但是聊胜于无，免费账号可以同时加入100台机器（甚至对于一个小团队都是够用的），不限制子网数量 动手吧！ 安装anyproxy 首先确保有npm工具： npm -v 直接进行一个安装 sudo npm install anyproxy -g 启动测试 anyproxy --port &lt;proxy port u wanna use&gt; 配置开机启动 防止机器断电，还是配置一下开机自启比较好 为了方便（其实是我只会这一种），这里使用systemd的方式配置开机自启 具体systemd是什么请自行google，这里只需要知道该守护程序有两个可以放置配置文件的地方：/etc/systemd/system/或者/usr/lib/systemd/system/ 创建服务文件 sudo touch /usr/lib/systemd/system/anyproxy.service 编写服务文件(复制记得删除注释) [Unit] Description=Initiate the anyproxy server # 给出一个详细描述 After=network-online.target # 固定 [Service] Type=simple # 固定 ExecStart=/bin/bash &lt;abspath_to_init.sh&gt; # 需要将anyproxy的启动写成一个sh脚本，并放在任意位置，chmod给执行权限 Restart=on-abort # 固定 User=root # 固定 [Install] # 固定 WantedBy=default.target # 固定 重载 sudo systemctl daemon-reload 启动 sudo systemctl start anyproxy 查看运行状态 sudo systemclt status anyproxy 设置开机自启 sudo systemctl enable anyproxy 安装配置zerotier-one 下载 这里下载并安装 注册并创建一个子网 这里使用你喜欢的方式注册登录zerotier 点击Create A Network，稍等片刻点击进入创建好的子网 起一个喜欢的名字，其他保持默认即可 记下来最上边的Network ID，这个后边会用 加入网络 Linux 执行下列命令加入刚刚创建的子网 sudo zerotier-cli join &lt;Network ID&gt; 稍等片刻，回到网页后台会发现在Members区域出现了刚刚加入的机器，但是zerotier默认新加入的机器没有任何ip分配权限，需要点击最前边Auth?对应的小框框，打上勾勾，稍等片刻便发现刚刚的机器被分配了一个自己的ip地址 你可以给机器起一个方便记忆的名字，此时所有加入了这个子网的机器都可以使用子网内的ip进行互相通信，我们不需要关心其背后的实现逻辑到底是直通还是官方中转 Windows 安装完成后会自动启动并最小化到托盘 点击右键并打开控制面板 键入Network ID并点击加入 回到网页后台重复上述授权 恭喜你，此时你手上的机器与刚才启动anyproxy的机器已经在同一个内网了，你可以使用服务器在内网中的ip地址加上刚刚设置的anyproxy端口进行代理访问了；当然你也可以直接使用内网ip对服务器进行ssh连接，将该机器作为跳板机连接任何与该机器同网内的设备 zerotier-one在安装时如果使用的是官方的安装脚本的话其默认是开机自启的，不需要我们再重新配置 后记 这里介绍了新的两种内网组建方式 其实这几种方式排列组合能够产生很多好玩的用法，子网的方式能够更安全的对外暴露ssh等敏感服务，理论上讲只有zerotier官方能够看到服务器的真实ip（该ip还不是机器的，是机器所在最高网关的），此时能够完全放心的ssh连接，否则的话使用公网ip暴露ssh端口会有很多很多陌生人跨越山和大海来扫你… 本人水平有限，仍在努力学习，难免存在行文不畅、过于简单、存在错误等等问题，希望大家多多指正！">
+
+  <link rel="canonical" href="/posts/15/" />
+</head>
+<body
+    class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
+  ><header
+  class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"
+>
+  <div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto">
+    <a
+      class="-translate-y-[1px] text-2xl font-medium"
+      href="/"
+      >Chaos</a
+    >
+    <div
+      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? "rgb(0 0 0 / 85%)" : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"
+  ><nav
+      class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"
+    ><a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="posts/about"
+        >About</a
+      ></nav><nav
+      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+    >
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/map[creator:%20site:]"
+        target="_blank"
+        rel="me"
+      >twitter</a>
+      <a
+        class="h-7 w-7 text-[0px] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/github.com/Chaotic-chaos"
+        target="_blank"
+        rel="me"
+      >github</a>
+    </nav>
+  </div>
+</header>
+<main
+      class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"
+    ><article>
+  <header class="mb-14">
+    <h1 class="my-0! pb-2.5">使用zerotier-one搭配anyproxy保障多种方式回内网</h1><div class="text-xs antialiased opacity-60"><time>Dec 30, 2021</time><span class="mx-1">&middot;</span>
+      <span>chaos</span></div></header>
+
+  <section><h1 id="背景">背景</h1>
+<ul>
+<li>之前写过怎么在win平台使用<!-- raw HTML omitted -->frp<!-- raw HTML omitted -->搭配<!-- raw HTML omitted -->zerotierone<!-- raw HTML omitted -->搭建回校内网，详见<a href="https://blog.hk.chaoss.top/archives/10/">这里</a></li>
+<li>但是pc经常会出现关机等等意外情况，同时frp一定需要一台公网服务器，受限于国内带宽的高价，有时候该种解决方案并不是最优</li>
+<li>本次介绍一种使用<!-- raw HTML omitted -->zerotier-one<!-- raw HTML omitted -->的官方服务进行内网组建同时搭配anyproxy的vpn方法</li>
+<li>刚好趁此机会介绍一下在linux下的anyproxy的安装配置</li>
+</ul>
+<h1 id="产品简介">产品简介</h1>
+<h2 id="anyproxy">anyproxy</h2>
+<ul>
+<li>跨平台基于nodejs的快速http代理工具，不多介绍</li>
+</ul>
+<h2 id="zerotier-one">zerotier-one</h2>
+<ul>
+<li>一款全平台的vpn子网组件工具</li>
+<li>该工具会自动在<!-- raw HTML omitted -->转发、直通、p2p<!-- raw HTML omitted -->等方式中选择最优方案进行子网组建</li>
+<li>官方提供转发服务器，虽然是在境外（速度相对较慢）但是聊胜于无，免费账号可以同时加入100台机器（甚至对于一个小团队都是够用的），不限制子网数量</li>
+</ul>
+<h1 id="动手吧">动手吧！</h1>
+<h2 id="安装anyproxy">安装anyproxy</h2>
+<ul>
+<li>首先确保有npm工具：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>npm -v
+</span></span></code></pre></div><ul>
+<li>直接进行一个安装</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo npm install anyproxy -g
+</span></span></code></pre></div><ul>
+<li>启动测试</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>anyproxy --port &lt;proxy port u wanna use&gt;
+</span></span></code></pre></div><ul>
+<li><strong>配置开机启动</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>防止机器断电，还是配置一下开机自启比较好</li>
+<li>为了方便（其实是我只会这一种），这里使用systemd的方式配置开机自启</li>
+<li>具体systemd是什么请自行google，这里只需要知道该守护程序有两个可以放置配置文件的地方：<code>/etc/systemd/system/</code>或者<code>/usr/lib/systemd/system/</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>创建服务文件</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo touch /usr/lib/systemd/system/anyproxy.service
+</span></span></code></pre></div><ul>
+<li>编写服务文件<!-- raw HTML omitted -->(复制记得删除注释)<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>Unit<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Description<span style="color:#f92672">=</span>Initiate the anyproxy server <span style="color:#75715e"># 给出一个详细描述</span>
+</span></span><span style="display:flex;"><span>After<span style="color:#f92672">=</span>network-online.target <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Service<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Type<span style="color:#f92672">=</span>simple <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/bin/bash &lt;abspath_to_init.sh&gt; <span style="color:#75715e"># 需要将anyproxy的启动写成一个sh脚本，并放在任意位置，chmod给执行权限</span>
+</span></span><span style="display:flex;"><span>Restart<span style="color:#f92672">=</span>on-abort <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span>User<span style="color:#f92672">=</span>root <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Install<span style="color:#f92672">]</span> <span style="color:#75715e"># 固定</span>
+</span></span><span style="display:flex;"><span>WantedBy<span style="color:#f92672">=</span>default.target <span style="color:#75715e"># 固定</span>
+</span></span></code></pre></div><ul>
+<li>重载</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo systemctl daemon-reload
+</span></span></code></pre></div><ul>
+<li>启动</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo systemctl start anyproxy
+</span></span></code></pre></div><ul>
+<li>查看运行状态</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo systemclt status anyproxy
+</span></span></code></pre></div><ul>
+<li>设置开机自启</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo systemctl enable anyproxy
+</span></span></code></pre></div><h2 id="安装配置zerotier-one">安装配置zerotier-one</h2>
+<h3 id="下载">下载</h3>
+<ul>
+<li><a href="https://www.zerotier.com/download/">这里</a>下载并安装</li>
+</ul>
+<h3 id="注册并创建一个子网">注册并创建一个子网</h3>
+<ul>
+<li><a href="https://my.zerotier.com/">这里</a>使用你喜欢的方式注册登录zerotier</li>
+<li>点击<code>Create A Network</code>，稍等片刻点击进入创建好的子网</li>
+<li>起一个喜欢的名字，其他保持默认即可</li>
+<li>记下来最上边的<code>Network ID</code>，这个后边会用</li>
+</ul>
+<h3 id="加入网络">加入网络</h3>
+<h4 id="linux">Linux</h4>
+<ul>
+<li>执行下列命令加入刚刚创建的子网</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo zerotier-cli join &lt;Network ID&gt;
+</span></span></code></pre></div><ul>
+<li>稍等片刻，回到网页后台会发现在<code>Members</code>区域出现了刚刚加入的机器，但是zerotier默认新加入的机器没有任何ip分配权限，需要点击最前边<code>Auth?</code>对应的小框框，打上勾勾，稍等片刻便发现刚刚的机器被分配了一个自己的ip地址
+<img src="https://pic.imgdb.cn/item/61cdc9b12ab3f51d91faad8d.jpg" alt="授权"></li>
+<li>你可以给机器起一个方便记忆的名字，此时所有加入了这个子网的机器都可以使用子网内的ip进行互相通信，我们不需要关心其背后的实现逻辑到底是直通还是官方中转</li>
+</ul>
+<h4 id="windows">Windows</h4>
+<ul>
+<li>安装完成后会自动启动并最小化到托盘</li>
+<li>点击右键并打开控制面板
+<img src="https://pic.imgdb.cn/item/61cdc9f92ab3f51d91fae7ff.jpg" alt="打开控制面板"></li>
+<li>键入<code>Network ID</code>并点击加入
+<img src="https://pic.imgdb.cn/item/61cdc9732ab3f51d91fa6703.jpg" alt="加入网络"></li>
+<li>回到网页后台重复上述授权</li>
+<li>恭喜你，此时你手上的机器与刚才启动anyproxy的机器已经在同一个内网了，你可以使用服务器在内网中的ip地址加上刚刚设置的anyproxy端口进行代理访问了；当然你也可以直接使用内网ip对服务器进行ssh连接，将该机器作为跳板机连接任何与该机器同网内的设备</li>
+<li>zerotier-one在安装时如果使用的是官方的安装脚本的话其默认是开机自启的，不需要我们再重新配置</li>
+</ul>
+<h1 id="后记">后记</h1>
+<ul>
+<li>这里介绍了新的两种内网组建方式</li>
+<li>其实这几种方式排列组合能够产生很多好玩的用法，子网的方式能够更安全的对外暴露ssh等敏感服务，理论上讲只有zerotier官方能够看到服务器的真实ip（该ip还不是机器的，是机器所在最高网关的），此时能够完全放心的ssh连接，否则的话使用公网ip暴露ssh端口会有很多很多陌生人跨越山和大海来扫你&hellip;</li>
+<li>本人水平有限，仍在努力学习，难免存在行文不畅、过于简单、存在错误等等问题，希望大家多多指正！</li>
+</ul>
+</section>
+
+  <footer class="mt-12 flex flex-wrap"><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/system"
+      >System</a
+    ><a
+      class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="/tags/%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"
+      >日常使用</a
+    ></footer><nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  ><a class="ltr:pr-3 rtl:pl-3" href="/posts/17/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用wireguard&amp;amp;wg-easy快速实现异地组网</span></a
+    ><a
+      class="justify-end pl-3 ltr:ml-auto rtl:mr-auto"
+      href="/posts/14/"
+      ><span>Treafik反代保姆级急速上手</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    ></nav></article></main><footer
+  class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"
+>
+  <div class="mr-auto">&copy;2026
+    <a class="link" href="/">Chaos</a></div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+</body>
+</html>
